@@ -5,7 +5,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
-import { captureSentryException, captureSentryMessage } from "@/lib/sentry";
+import { captureSentryException } from "@/lib/sentry";
 
 // ============================================
 // Types

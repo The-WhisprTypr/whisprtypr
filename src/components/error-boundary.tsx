@@ -26,7 +26,7 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error("Uncaught error:", error, errorInfo);
 
     captureSentryException(error, {
-      componentStack: errorInfo.componentStack,
+      ...(errorInfo.componentStack ? { componentStack: errorInfo.componentStack } : {}),
     });
 
     try {

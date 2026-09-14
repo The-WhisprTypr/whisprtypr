@@ -6,7 +6,6 @@ import {
   History,
   Key,
   LayoutDashboard,
-  Mic,
   RefreshCw,
   Settings,
   Sliders,
