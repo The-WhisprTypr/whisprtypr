@@ -1,0 +1,257 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  frontend-typecheck:
+    name: Frontend Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
+
+  frontend-build:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    env:
+      VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+
+  rust-tests-linux:
+    name: Rust Tests (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: sudo apt-get update
+      - run: |
+          # Tauri 2.x needs webkit2gtk. The package version differs by
+          # Ubuntu release: 4.1 on Jammy (22.04) and 4.2 on Noble (24.04).
+          # Install whichever is available so the build works on either.
+          sudo apt-get install -y libwebkit2gtk-4.1-dev 2>/dev/null \
+            || sudo apt-get install -y libwebkit2gtk-4.2-dev
+          sudo apt-get install -y libssl-dev pkg-config libasound2-dev libgtk-3-dev libayatana-appindicator3-dev libclang-dev clang cmake libxdo-dev
+      - name: Set LIBCLANG_PATH
+        run: echo "LIBCLANG_PATH=$(find /usr/lib -name 'libclang.so*' -printf '%h\n' | head -1)" >> "$GITHUB_ENV"
+      - name: Setup CMake
+        run: echo "CMAKE=$(command -v cmake)" >> "$GITHUB_ENV"
+      - working-directory: src-tauri
+        run: cargo test -j 1
+
+  rust-tests-windows:
+    name: Rust Tests (Windows)
+    runs-on: windows-latest
+    env:
+      # Ensure ORT downloads binaries correctly
+      ORT_STRATEGY: download
+      ORT_USE_STATIC_LIBS: 0
+      RUST_BACKTRACE: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Setup CMake
+        shell: pwsh
+        run: |
+          $cmake = "${env:ProgramFiles}\CMake\bin\cmake.exe"
+          if (-not (Test-Path -LiteralPath $cmake)) {
+            $cmake = (Get-Command cmake.exe -ErrorAction Stop).Source
+          }
+          "CMAKE=$cmake" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          & $cmake --version
+      - name: Install DirectML
+        shell: pwsh
+        run: |
+          # Download and extract DirectML redist
+          $directMLUrl = "https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.15.2"
+          $tempDir = "$env:TEMP\directml"
+          New-Item -ItemType Directory -Force -Path $tempDir
+          Invoke-WebRequest -Uri $directMLUrl -OutFile "$tempDir\directml.zip"
+          Expand-Archive -Path "$tempDir\directml.zip" -DestinationPath $tempDir -Force
+          
+          # Put DirectML.dll in a writable directory and add it to PATH
+          $dllPath = Get-ChildItem -Path $tempDir -Filter "DirectML.dll" -Recurse -File | Select-Object -First 1
+          if ($dllPath) {
+            $directMLBinDir = "$env:RUNNER_TEMP\directml-bin"
+            New-Item -ItemType Directory -Force -Path $directMLBinDir | Out-Null
+            Copy-Item $dllPath.FullName -Destination "$directMLBinDir\DirectML.dll" -Force
+            $directMLBinDir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+            Write-Host "DirectML.dll installed to $directMLBinDir and added to PATH"
+          } else {
+            throw "DirectML.dll not found in package"
+          }
+      - name: Clean cargo cache
+        shell: pwsh
+        run: |
+          # Clean any cached broken builds
+          if (Test-Path "src-tauri/target") {
+            Remove-Item -Recurse -Force "src-tauri/target/debug/build/ort-sys-*" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -Force "src-tauri/target/debug/build/whisper-rs-sys-*" -ErrorAction SilentlyContinue
+          }
+      - working-directory: src-tauri
+        run: cargo test -j 1 --verbose
+
+  build-linux:
+    name: Build (Linux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+      NO_STRIP: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+      - run: sudo apt-get update
+      - run: |
+          # Tauri 2.x needs webkit2gtk. The package version differs by
+          # Ubuntu release: 4.1 on Jammy (22.04) and 4.2 on Noble (24.04).
+          # Install whichever is available so the build works on either.
+          sudo apt-get install -y libwebkit2gtk-4.1-dev 2>/dev/null \
+            || sudo apt-get install -y libwebkit2gtk-4.2-dev
+          sudo apt-get install -y libssl-dev pkg-config libasound2-dev libgtk-3-dev libayatana-appindicator3-dev libclang-dev clang cmake libxdo-dev libfuse2 librpm-dev librsvg2-dev
+      - name: Set LIBCLANG_PATH
+        run: echo "LIBCLANG_PATH=$(find /usr/lib -name 'libclang.so*' -printf '%h\n' | head -1)" >> "$GITHUB_ENV"
+      - name: Setup CMake
+        run: echo "CMAKE=$(command -v cmake)" >> "$GITHUB_ENV"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm tauri build --bundles appimage,deb --verbose --config '{"bundle":{"createUpdaterArtifacts":false}}'
+
+  build-windows:
+    name: Build (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 90
+    env:
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+      # Ensure ORT downloads binaries correctly
+      ORT_STRATEGY: download
+      ORT_USE_STATIC_LIBS: 0
+      # Increase verbosity for debugging
+      RUST_BACKTRACE: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Setup CMake
+        shell: pwsh
+        run: |
+          $cmake = "${env:ProgramFiles}\CMake\bin\cmake.exe"
+          if (-not (Test-Path -LiteralPath $cmake)) {
+            $cmake = (Get-Command cmake.exe -ErrorAction Stop).Source
+          }
+          if (-not (Test-Path -LiteralPath $cmake)) {
+            throw "cmake.exe not found at $cmake"
+          }
+          "CMAKE=$cmake" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          & $cmake --version
+      - name: Install DirectML
+        shell: pwsh
+        run: |
+          # Download and extract DirectML redist
+          $directMLUrl = "https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.15.2"
+          $tempDir = "$env:TEMP\directml"
+          New-Item -ItemType Directory -Force -Path $tempDir
+          Invoke-WebRequest -Uri $directMLUrl -OutFile "$tempDir\directml.zip"
+          Expand-Archive -Path "$tempDir\directml.zip" -DestinationPath $tempDir -Force
+          
+          # Put DirectML.dll in a writable directory and add it to PATH
+          $dllPath = Get-ChildItem -Path $tempDir -Filter "DirectML.dll" -Recurse -File | Select-Object -First 1
+          if ($dllPath) {
+            $directMLBinDir = "$env:RUNNER_TEMP\directml-bin"
+            New-Item -ItemType Directory -Force -Path $directMLBinDir | Out-Null
+            Copy-Item $dllPath.FullName -Destination "$directMLBinDir\DirectML.dll" -Force
+            $directMLBinDir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+            Write-Host "DirectML.dll installed to $directMLBinDir and added to PATH"
+          } else {
+            throw "DirectML.dll not found in package"
+          }
+      - name: Clean cargo cache
+        shell: pwsh
+        run: |
+          # Clean any cached broken builds
+          if (Test-Path "src-tauri/target") {
+            Remove-Item -Recurse -Force "src-tauri/target/release/build/ort-sys-*" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -Force "src-tauri/target/release/build/whisper-rs-sys-*" -ErrorAction SilentlyContinue
+          }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm tauri build --bundles nsis,msi --verbose --config '{\"bundle\":{\"createUpdaterArtifacts\":false}}'
+
+  build-macos:
+    name: Build (macOS)
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+      - name: Setup libclang and CMake
+        run: |
+          brew install llvm cmake
+          LLVM_PREFIX="$(brew --prefix llvm)"
+          echo "LIBCLANG_PATH=${LLVM_PREFIX}/lib" >> "$GITHUB_ENV"
+          echo "CMAKE=$(command -v cmake)" >> "$GITHUB_ENV"
+      - name: Clean stale build artifacts (macOS)
+        if: matrix.platform == 'macos-latest'
+        run: |
+          # Clear any cached build artifacts that may contain stale cfg
+          # flags from a previous build script version (e.g. the old
+          # `feature:metal` form that rustc rejects). The build scripts
+          # emit `cargo:rerun-if-changed=build.rs` but a full clean is
+          # the only guarantee when the build script itself changes.
+          rm -rf src-tauri/target
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm tauri build --bundles app --target aarch64-apple-darwin --config '{"bundle":{"createUpdaterArtifacts":false}}'
+      - name: Validate macOS app bundle
+        run: |
+          APP_PATH="$(find src-tauri/target/aarch64-apple-darwin/release/bundle/macos -maxdepth 1 -name '*.app' -type d -print -quit)"
+          test -n "$APP_PATH"
+          plutil -lint "$APP_PATH/Contents/Info.plist"
+          codesign --force --deep --sign - "$APP_PATH"
+          codesign --verify --deep --strict --verbose=2 "$APP_PATH"

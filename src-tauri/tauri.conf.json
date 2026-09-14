@@ -1,0 +1,130 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "WhisprTypr",
+  "version": "1.0.0",
+  "identifier": "com.johuniq.whisprtypr",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+{
+        "title": "WhisprTypr",
+        "hiddenTitle": true,
+        "titleBarStyle": "Overlay",
+        "trafficLightPosition": { "x": 12, "y": 12 },
+        "label": "main",
+        "width": 1050,
+        "height": 680,
+        "minWidth": 1050,
+        "minHeight": 680,
+        "resizable": true,
+        "center": true,
+        "visible": false,
+        "skipTaskbar": true,
+        "alwaysOnTop": false,
+        "minimizable": false,
+        "maximizable": false
+      },
+      {
+        "title": "",
+        "label": "recording-overlay",
+        "url": "/overlay.html",
+        "width": 1920,
+        "height": 1080,
+        "resizable": false,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "visible": false,
+        "skipTaskbar": true,
+        "focus": false,
+        "fullscreen": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src 'self' https://huggingface.co https://*.huggingface.co https://github.com https://*.github.com https://api.github.com https://*.sentry.io https://o1.ingest.sentry.io",
+      "dangerousDisableAssetCspModification": false,
+      "freezePrototype": true
+    }
+  },
+  "bundle": {
+    "active": true,
+    "createUpdaterArtifacts": true,
+    "targets": ["nsis", "msi", "dmg", "app", "appimage", "deb", "rpm"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": [],
+    "category": "Utility",
+    "shortDescription": "Wave your voice into text at your cursor",
+    "longDescription": "WhisprTypr is an open-source desktop dictation app that turns your voice into polished text at your cursor using local speech models. Features include push-to-talk and toggle recording modes, model management, optional text injection, transcription history, and file transcription support.",
+    "publisher": "Johuniq",
+    "copyright": "Copyright (c) 2026 Johuniq",
+    "licenseFile": "../LICENSE",
+    "macOS": {
+      "entitlements": "WhisprTypr.entitlements",
+      "minimumSystemVersion": "13.0",
+      "frameworks": [],
+      "hardenedRuntime": false,
+      "signingIdentity": null,
+      "providerShortName": null,
+      "dmg": {
+        "background": null,
+        "windowSize": {
+          "width": 660,
+          "height": 400
+        },
+        "appPosition": {
+          "x": 180,
+          "y": 170
+        },
+        "applicationFolderPosition": {
+          "x": 480,
+          "y": 170
+        }
+      }
+    },
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "https://timestamp.digicert.com",
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      },
+      "allowDowngrades": false,
+      "nsis": {
+        "template": null,
+        "installerIcon": "icons/icon.ico",
+        "headerImage": null,
+        "sidebarImage": null,
+        "installMode": "currentUser",
+        "languages": ["English"],
+        "displayLanguageSelector": false,
+        "compression": "lzma"
+      }
+    }
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    },
+    "autostart": null,
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE5ODIzM0Q0NDk2N0FGQjkKUldTNXIyZEoxRE9DcVFMV0t2dkpHQmdzcFU4STF1Y3BJMW1hdkMxTnYwR3BLSmpkeFNoMG1HYysK",
+      "endpoints": [
+        "https://github.com/johuniq/whisprtypr/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

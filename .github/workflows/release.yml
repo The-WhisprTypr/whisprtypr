@@ -1,0 +1,369 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  CARGO_INCREMENTAL: 0
+  RUST_BACKTRACE: short
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.prepare-release.outputs.release_id }}
+      release_was_draft: ${{ steps.prepare-release.outputs.release_was_draft }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create Or Reuse Release
+        id: prepare-release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const tagName = `v${{ steps.version.outputs.version }}`;
+            const releaseName = `WhisprTypr ${tagName}`;
+            const body = 'See the assets section below to download the installer for your platform.';
+
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner,
+              repo,
+              per_page: 100
+            });
+
+            const matching = releases.filter((release) => release.tag_name === tagName);
+            let release = matching.find((candidate) => !candidate.draft) || matching[0];
+
+            if (release) {
+              core.info(`Reusing ${release.draft ? 'draft' : 'published'} release ${release.id} for ${tagName}.`);
+              await github.rest.repos.updateRelease({
+                owner,
+                repo,
+                release_id: release.id,
+                name: release.name || releaseName,
+                body: release.body || body,
+                prerelease: false
+              });
+            } else {
+              core.info(`Creating draft release for ${tagName}.`);
+              const response = await github.rest.repos.createRelease({
+                owner,
+                repo,
+                tag_name: tagName,
+                name: releaseName,
+                body,
+                draft: true,
+                prerelease: false
+              });
+              release = response.data;
+            }
+
+            core.setOutput('release_id', String(release.id));
+            core.setOutput('release_was_draft', String(release.draft));
+
+  build-tauri:
+    needs: create-release
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "macos-latest"
+            args: "--target aarch64-apple-darwin --bundles dmg,app"
+          - platform: "macos-latest"
+            args: "--target x86_64-apple-darwin --bundles dmg,app"
+          - platform: "windows-latest"
+            args: "--bundles nsis,msi"
+          - platform: "ubuntu-latest"
+            args: "--bundles appimage,deb"
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || matrix.platform == 'ubuntu-latest' && 'x86_64-unknown-linux-gnu' || '' }}
+
+      - name: Setup libclang for bindgen (macOS)
+        if: matrix.platform == 'macos-latest'
+        run: |
+          brew install llvm
+          LLVM_PREFIX="$(brew --prefix llvm)"
+          echo "LIBCLANG_PATH=${LLVM_PREFIX}/lib" >> "$GITHUB_ENV"
+
+      - name: Setup CMake for native builds (macOS)
+        if: matrix.platform == 'macos-latest'
+        run: |
+          brew install cmake
+          CMAKE_BIN="$(command -v cmake)"
+          echo "CMAKE=${CMAKE_BIN}" >> "$GITHUB_ENV"
+
+      - name: Clean stale build artifacts (macOS)
+        if: matrix.platform == 'macos-latest'
+        run: |
+          # Clear any cached build artifacts that may contain stale cfg
+          # flags from a previous build script version (e.g. the old
+          # `feature:metal` form that rustc rejects). The build scripts
+          # emit `cargo:rerun-if-changed=build.rs` but a full clean is
+          # the only guarantee when the build script itself changes.
+          rm -rf src-tauri/target
+
+      - name: Setup CMake for native builds (Windows)
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        run: |
+          $cmake = "${env:ProgramFiles}\CMake\bin\cmake.exe"
+          if (-not (Test-Path -LiteralPath $cmake)) {
+            $cmake = (Get-Command cmake.exe -ErrorAction Stop).Source
+          }
+          if (-not (Test-Path -LiteralPath $cmake)) {
+            throw "cmake.exe not found at $cmake"
+          }
+          "CMAKE=$cmake" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          & $cmake --version
+
+      - name: Import Windows signing certificate
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        env:
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_CERTIFICATE) -or [string]::IsNullOrWhiteSpace($env:WINDOWS_CERTIFICATE_PASSWORD)) {
+            Write-Warning "WINDOWS_CERTIFICATE and WINDOWS_CERTIFICATE_PASSWORD secrets are not set. Building unsigned Windows installer."
+            exit 0
+          }
+
+          $certPath = Join-Path $env:RUNNER_TEMP "whisprtypr-signing.pfx"
+          [IO.File]::WriteAllBytes($certPath, [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE))
+
+          $password = ConvertTo-SecureString $env:WINDOWS_CERTIFICATE_PASSWORD -AsPlainText -Force
+          $cert = Import-PfxCertificate -FilePath $certPath -CertStoreLocation Cert:\CurrentUser\My -Password $password
+          if (-not $cert -or [string]::IsNullOrWhiteSpace($cert.Thumbprint)) {
+            throw "Failed to import Windows signing certificate."
+          }
+
+          "WINDOWS_CERTIFICATE_THUMBPRINT=$($cert.Thumbprint)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Configure Windows signing
+        if: matrix.platform == 'windows-latest' && env.WINDOWS_CERTIFICATE_THUMBPRINT != ''
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_CERTIFICATE_THUMBPRINT)) {
+            throw "WINDOWS_CERTIFICATE_THUMBPRINT was not set."
+          }
+
+          $configPath = "src-tauri\tauri.conf.json"
+          $config = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
+          $config.bundle.windows.certificateThumbprint = $env:WINDOWS_CERTIFICATE_THUMBPRINT
+          $config.bundle.windows.allowDowngrades = $false
+          $config | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $configPath -Encoding utf8
+
+      - name: Setup Linux dependencies
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          # Tauri 2.x needs webkit2gtk. The package version differs by
+          # Ubuntu release: 4.1 on Jammy (22.04) and 4.2 on Noble (24.04).
+          # Install whichever is available so the build works on either.
+          sudo apt-get install -y libwebkit2gtk-4.1-dev 2>/dev/null \
+            || sudo apt-get install -y libwebkit2gtk-4.2-dev
+          sudo apt-get install -y \
+            libssl-dev \
+            pkg-config \
+            libasound2-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            libclang-dev \
+            clang \
+            cmake \
+            libxdo-dev \
+            libfuse2 \
+            librpm-dev \
+            librsvg2-dev
+          echo "LIBCLANG_PATH=$(find /usr/lib -name 'libclang.so*' -printf '%h\n' | head -1)" >> "$GITHUB_ENV"
+          echo "CMAKE=$(command -v cmake)" >> "$GITHUB_ENV"
+
+      - name: Setup ONNX Runtime for Intel macOS
+        if: contains(matrix.args, 'x86_64-apple-darwin')
+        run: |
+          ORT_VERSION="1.23.2"
+          ORT_ARCHIVE="onnxruntime-osx-x86_64-${ORT_VERSION}.tgz"
+          ORT_ROOT="${RUNNER_TEMP}/onnxruntime"
+          curl -L "https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/${ORT_ARCHIVE}" -o "${RUNNER_TEMP}/${ORT_ARCHIVE}"
+          mkdir -p "${ORT_ROOT}"
+          tar -xzf "${RUNNER_TEMP}/${ORT_ARCHIVE}" -C "${ORT_ROOT}"
+          ORT_DIR="${ORT_ROOT}/onnxruntime-osx-x86_64-${ORT_VERSION}"
+          echo "ORT_LIB_PATH=${ORT_DIR}/lib" >> "$GITHUB_ENV"
+          echo "ORT_LIB_LOCATION=${ORT_DIR}/lib" >> "$GITHUB_ENV"
+          echo "ORT_PREFER_DYNAMIC_LINK=1" >> "$GITHUB_ENV"
+          echo "DYLD_LIBRARY_PATH=${ORT_DIR}/lib:${DYLD_LIBRARY_PATH}" >> "$GITHUB_ENV"
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
+      - name: Build Tauri App
+        uses: tauri-apps/tauri-action@v0.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+        with:
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+          args: ${{ matrix.args }}
+          includeUpdaterJson: false
+
+  publish-release:
+    runs-on: ubuntu-latest
+    needs: [create-release, build-tauri]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Generate updater manifest and checksums
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+          gh release download "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir release-assets \
+            --clobber
+
+          VERSION="${GITHUB_REF_NAME#v}"
+          PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          RELEASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}"
+          NOTES=$(gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json body -q '.body' 2>/dev/null || echo "")
+
+          # Build latest.json for the Tauri updater plugin.
+          # Each platform's entry needs the download URL and the signature
+          # from the corresponding .sig file produced by tauri-action.
+          export VERSION PUB_DATE RELEASE_URL NOTES
+          node <<'MANIFEST_SCRIPT'
+          const fs = require("fs");
+          const path = require("path");
+
+          const dir = "release-assets";
+          const files = fs.readdirSync(dir);
+          const { VERSION, PUB_DATE, RELEASE_URL, NOTES } = process.env;
+
+          // Tauri v2 updater platform keys → asset filename patterns.
+          // Each pattern matches the updater-compatible bundle for that target.
+          const platformDefs = [
+            { key: "windows-x86_64",  re: /\.nsis\.zip$/i },
+            { key: "linux-x86_64",    re: /\.AppImage\.tar\.gz$/i },
+            { key: "darwin-aarch64",  re: /(aarch64|arm64).*\.app\.tar\.gz$/i },
+            { key: "darwin-x86_64",   re: /(x86_64|x64).*\.app\.tar\.gz$/i },
+          ];
+
+          const platforms = {};
+
+          for (const { key, re } of platformDefs) {
+            const asset = files.find(f => re.test(f) && !f.endsWith(".sig"));
+            if (!asset) {
+              console.log(`SKIP ${key}: no matching asset`);
+              continue;
+            }
+
+            const sigPath = path.join(dir, asset + ".sig");
+            if (!fs.existsSync(sigPath)) {
+              console.log(`SKIP ${key}: no .sig for ${asset}`);
+              continue;
+            }
+
+            platforms[key] = {
+              signature: fs.readFileSync(sigPath, "utf8").trim(),
+              url: `${RELEASE_URL}/${asset}`,
+            };
+            console.log(`  OK ${key}: ${asset}`);
+          }
+
+          if (Object.keys(platforms).length === 0) {
+            console.error("WARNING: no signed updater artifacts found – latest.json will not be generated.");
+            console.error("Make sure TAURI_SIGNING_PRIVATE_KEY is set so tauri-action produces .sig files.");
+            process.exit(0);
+          }
+
+          const manifest = {
+            version: VERSION,
+            notes: NOTES || "",
+            pub_date: PUB_DATE,
+            platforms,
+          };
+
+          const out = path.join(dir, "latest.json");
+          fs.writeFileSync(out, JSON.stringify(manifest, null, 2) + "\n");
+          console.log(`Generated ${out} with platforms: ${Object.keys(platforms).join(", ")}`);
+          MANIFEST_SCRIPT
+
+          if [[ -f release-assets/latest.json ]]; then
+            gh release upload "$GITHUB_REF_NAME" release-assets/latest.json \
+              --repo "$GITHUB_REPOSITORY" \
+              --clobber
+            echo "Uploaded latest.json"
+          else
+            echo "::warning::latest.json was not generated. The in-app updater will not work for this release."
+          fi
+
+          cd release-assets
+          sha256sum * | sort -k2 > SHA256SUMS.txt
+          gh release upload "$GITHUB_REF_NAME" SHA256SUMS.txt \
+            --repo "$GITHUB_REPOSITORY" \
+            --clobber
+
+      - name: Publish Release
+        uses: actions/github-script@v7
+        env:
+          release_id: ${{ needs.create-release.outputs.release_id }}
+          release_was_draft: ${{ needs.create-release.outputs.release_was_draft }}
+        with:
+          script: |
+            const payload = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: Number(process.env.release_id),
+              body: [
+                'See the assets section below to download the installer for your platform.'
+              ].join('\n')
+            };
+
+            if (process.env.release_was_draft === 'true') {
+              payload.draft = false;
+            }
+
+            await github.rest.repos.updateRelease(payload);

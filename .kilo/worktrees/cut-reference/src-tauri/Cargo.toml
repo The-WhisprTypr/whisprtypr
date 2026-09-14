@@ -1,0 +1,139 @@
+[package]
+name = "whisprtypr"
+version = "1.0.0"
+description = "Open-source desktop voice-to-text app with local AI transcription"
+authors = ["Johuniq"]
+edition = "2021"
+license = "AGPL-3.0-only"
+repository = "https://github.com/johuniq/whisprtypr"
+readme = "../README.md"
+keywords = ["voice", "speech-to-text", "transcription", "whisper", "tauri"]
+categories = ["multimedia::audio"]
+rust-version = "1.81"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "vox_ai_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["image-png", "tray-icon"] }
+tauri-plugin-opener = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-store = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-process = "2"
+tauri-plugin-os = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-autostart = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+log = "0.4"
+env_logger = "0.11"
+
+# Audio capture
+cpal = "0.15"
+
+# OS-level input simulation (for text injection)
+enigo = "0.3"
+arboard = "3.4"
+
+# Async runtime utilities
+tokio = { version = "1", features = ["sync", "rt-multi-thread"] }
+
+# For downloading AI models (using rustls to avoid openssl dependency)
+reqwest = { version = "0.12", default-features = false, features = ["stream", "rustls-tls", "json"] }
+futures-util = "0.3"
+
+# For model/config paths
+dirs = "5"
+
+# SQLite database
+rusqlite = { version = "0.32", features = ["bundled"] }
+
+# Date/time handling for license expiration
+chrono = { version = "0.4", features = ["serde"] }
+
+# Hostname for device identification
+hostname = "0.4"
+
+# Regex for text post-processing
+regex = "1"
+lazy_static = "1.4"
+
+# Cryptographic hashing for device fingerprint
+sha2 = "0.10"
+hex = "0.4"
+
+# Encryption for secure data storage
+aes-gcm = "0.10"
+getrandom = { version = "0.2", features = ["std"] }
+
+# Whisper speech-to-text
+whisper-rs = "0.16"
+transcribe-rs = { version = "0.3.11", features = ["onnx"] }
+qwen3-asr = { path = "vendor/qwen3-asr", default-features = false }
+
+# Audio processing
+hound = "3.5"
+
+# Byte order for audio conversion
+byteorder = "1.5"
+
+# UUID for unique identifiers
+uuid = { version = "1", features = ["v4"] }
+
+# Audio format decoding
+symphonia = { version = "0.5.5", features = ["mp3", "ogg", "flac", "aac", "isomp4"] }
+
+# Platform-specific GPU acceleration for Whisper
+[target.'cfg(target_os = "windows")'.dependencies]
+transcribe-rs = { version = "0.3.11", features = ["onnx", "ort-directml"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+whisper-rs = { version = "0.16", features = ["metal"] }
+transcribe-rs = { version = "0.3.11", features = ["onnx", "ort-coreml"] }
+
+# Windows: CUDA support (optional)
+# [target.'cfg(target_os = "windows")'.dependencies]
+# whisper-rs = { version = "0.16", features = ["cuda"] }
+
+# Production profile optimizations
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
+incremental = false
+
+# Development profile
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
+
+# Release with debug symbols for profiling
+[profile.release-with-debug]
+inherits = "release"
+debug = true
+strip = false
+
+[dev-dependencies]
+tempfile = "3.23.0"
+httpmock = "0.7"
+
+[patch.crates-io]
+ort = { path = "vendor/ort" }

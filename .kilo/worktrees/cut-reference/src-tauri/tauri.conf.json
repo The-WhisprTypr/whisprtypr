@@ -1,0 +1,127 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "WhisprTypr",
+  "version": "1.0.0",
+  "identifier": "com.johuniq.whisprtypr",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "WhisprTypr",
+        "label": "main",
+        "width": 1100,
+        "height": 720,
+        "minWidth": 960,
+        "minHeight": 600,
+        "resizable": true,
+        "minimizable": true,
+        "maximizable": true,
+        "center": true,
+        "decorations": true,
+        "transparent": false,
+        "visible": true,
+        "focus": true,
+        "dragDropEnabled": true
+      },
+      {
+        "title": "",
+        "label": "recording-overlay",
+        "url": "/overlay.html",
+        "width": 1920,
+        "height": 1080,
+        "resizable": false,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "visible": false,
+        "skipTaskbar": true,
+        "focus": false,
+        "fullscreen": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src 'self' https://huggingface.co https://*.huggingface.co https://github.com https://*.github.com https://api.github.com",
+      "dangerousDisableAssetCspModification": false,
+      "freezePrototype": true
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "msi", "dmg", "app"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": [],
+    "category": "Utility",
+    "shortDescription": "Wave your voice into text at your cursor",
+    "longDescription": "WhisprTypr is an open-source desktop dictation app that turns your voice into polished text at your cursor using local speech models. Features include push-to-talk and toggle recording modes, model management, optional text injection, transcription history, and file transcription support.",
+    "publisher": "Johuniq",
+    "copyright": "Copyright (c) 2026 Johuniq",
+    "licenseFile": "../LICENSE",
+    "macOS": {
+      "entitlements": "WhisprTypr.entitlements",
+      "minimumSystemVersion": "13.0",
+      "frameworks": [],
+      "hardenedRuntime": false,
+      "signingIdentity": null,
+      "providerShortName": null,
+      "dmg": {
+        "background": null,
+        "windowSize": {
+          "width": 660,
+          "height": 400
+        },
+        "appPosition": {
+          "x": 180,
+          "y": 170
+        },
+        "applicationFolderPosition": {
+          "x": 480,
+          "y": 170
+        }
+      }
+    },
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "https://timestamp.digicert.com",
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      },
+      "allowDowngrades": false,
+      "nsis": {
+        "template": null,
+        "installerIcon": "icons/icon.ico",
+        "headerImage": null,
+        "sidebarImage": null,
+        "installMode": "currentUser",
+        "languages": ["English"],
+        "displayLanguageSelector": false,
+        "compression": "lzma"
+      }
+    }
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    },
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQ1RkM0MEMwNkVBMzE1QgpSV1JiTWVvR0RNUmZCQlR1bzkyMTcycjJwY0JVeFlYQnpxNHBHU2ZESmhXbkh3UUx1T2dDWHB2Tgo=",
+      "endpoints": [
+        "https://github.com/johuniq/whisprtypr/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

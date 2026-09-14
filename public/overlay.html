@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recording Overlay</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: transparent;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      .overlay-container {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .notch-pill {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: rgba(32, 21, 21, 0.92);
+        border: 1px solid rgba(255, 79, 0, 0.35);
+        border-radius: 9999px;
+        color: #fffefb;
+        font-family: Inter, system-ui, -apple-system, sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        backdrop-filter: blur(12px);
+        box-shadow:
+          0 4px 12px rgba(32, 21, 21, 0.25),
+          0 0 0 1px rgba(255, 79, 0, 0.15);
+        opacity: 0;
+        transform: translateY(-8px);
+        animation: pill-enter 0.35s ease-out forwards;
+        will-change: transform, opacity;
+      }
+
+      .notch-pill[data-position="top-left"] {
+        top: 16px;
+        left: 16px;
+      }
+      .notch-pill[data-position="top-center"] {
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-8px);
+      }
+      .notch-pill[data-position="top-right"] {
+        top: 16px;
+        right: 16px;
+      }
+      .notch-pill[data-position="bottom-left"] {
+        bottom: 16px;
+        left: 16px;
+      }
+      .notch-pill[data-position="bottom-center"] {
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%) translateY(8px);
+      }
+      .notch-pill[data-position="bottom-right"] {
+        bottom: 16px;
+        right: 16px;
+      }
+
+      .notch-pill.visible {
+        opacity: 1;
+      }
+
+      .notch-pill[data-position="top-center"].visible {
+        transform: translateX(-50%) translateY(0);
+      }
+      .notch-pill[data-position="bottom-center"].visible {
+        transform: translateX(-50%) translateY(0);
+      }
+      .notch-pill:not([data-position="top-center"]):not([data-position="bottom-center"]).visible {
+        transform: translateY(0);
+      }
+
+      .notch-pill::before {
+        content: "";
+        position: absolute;
+        top: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 12px;
+        height: 4px;
+        background: rgba(255, 79, 0, 0.6);
+        border-radius: 9999px 9999px 0 0;
+        opacity: 0.8;
+      }
+
+      .notch-pill[data-position="bottom-left"]::before,
+      .notch-pill[data-position="bottom-center"]::before,
+      .notch-pill[data-position="bottom-right"]::before {
+        top: auto;
+        bottom: -4px;
+        border-radius: 0 0 9999px 9999px;
+      }
+
+      .recording-dot {
+        width: 8px;
+        height: 8px;
+        background: #ff4f00;
+        border-radius: 50%;
+        box-shadow: 0 0 6px rgba(255, 79, 0, 0.6);
+        animation: dot-pulse 1.2s ease-in-out infinite;
+        will-change: opacity;
+      }
+
+      .recording-wave {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        height: 14px;
+      }
+
+      .recording-wave span {
+        display: block;
+        width: 2px;
+        background: #ff4f00;
+        border-radius: 999px;
+        animation: wave 1.2s ease-in-out infinite;
+      }
+
+      .recording-wave span:nth-child(1) { height: 30%; animation-delay: 0s; }
+      .recording-wave span:nth-child(2) { height: 60%; animation-delay: 0.15s; }
+      .recording-wave span:nth-child(3) { height: 100%; animation-delay: 0.3s; }
+      .recording-wave span:nth-child(4) { height: 60%; animation-delay: 0.45s; }
+      .recording-wave span:nth-child(5) { height: 30%; animation-delay: 0.6s; }
+
+      @keyframes dot-pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.85); }
+      }
+
+      @keyframes wave {
+        0%, 100% { transform: scaleY(0.5); }
+        50% { transform: scaleY(1); }
+      }
+
+      @keyframes pill-enter {
+        from { opacity: 0; transform: translateY(-8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .notch-pill[data-position="top-center"].visible {
+        animation: pill-enter-center 0.35s ease-out forwards;
+      }
+
+      @keyframes pill-enter-center {
+        from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+
+      .notch-pill[data-position="bottom-center"].visible {
+        animation: pill-enter-bottom-center 0.35s ease-out forwards;
+      }
+
+      @keyframes pill-enter-bottom-center {
+        from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+
+      .notch-pill[data-position="bottom-left"].visible,
+      .notch-pill[data-position="bottom-right"].visible {
+        animation: pill-enter-bottom 0.35s ease-out forwards;
+      }
+
+      @keyframes pill-enter-bottom {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Reduce motion preference */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay-container" id="overlay">
+      <div class="notch-pill visible" id="notch-pill" data-position="top-center">
+        <div class="recording-dot"></div>
+        <span>Recording</span>
+        <div class="recording-wave">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const pill = document.getElementById("notch-pill");
+
+      function showPill() {
+        pill.classList.add("visible");
+      }
+
+      function hidePill() {
+        pill.classList.remove("visible");
+      }
+
+      function updatePosition(position) {
+        if (pill) {
+          pill.setAttribute("data-position", position || "top-center");
+        }
+      }
+
+      if (window.__TAURI__) {
+        const { listen } = window.__TAURI__.event;
+
+        listen("hide-overlay", () => {
+          window.close();
+        });
+
+        listen("overlay-position", (event) => {
+          updatePosition(event.payload);
+        });
+
+        listen("show-recording-overlay", () => {
+          showPill();
+        });
+
+        listen("hide-recording-overlay", () => {
+          hidePill();
+        });
+      } else {
+        window.addEventListener("show-overlay", showPill);
+        window.addEventListener("hide-overlay", hidePill);
+      }
+    </script>
+  </body>
+</html>

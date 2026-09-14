@@ -1,0 +1,744 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Container-query breakpoints — sizes relative to the overview container */
+@custom-variant @xl (@container (min-width: 720px));
+@custom-variant @3xl (@container (min-width: 1024px));
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --radius: 0.75rem;
+
+  /* Zapier-aligned palette */
+  --background: #fffefb;
+  --foreground: #201515;
+  --card: #ffffff;
+  --card-foreground: #201515;
+  --popover: #ffffff;
+  --popover-foreground: #201515;
+  --primary: #ff4f00;
+  --primary-foreground: #fffefb;
+  --secondary: #f8f4f0;
+  --secondary-foreground: #201515;
+  --muted: #f8f4f0;
+  --muted-foreground: #605d52;
+  --accent: #f8f4f0;
+  --accent-foreground: #201515;
+  --destructive: #cf202f;
+  --border: #e8e2d6;
+  --input: #e8e2d6;
+  --ring: #ff4f00;
+
+  --chart-1: #ff4f00;
+  --chart-2: #201515;
+  --chart-3: #c5c0b1;
+  --chart-4: #939084;
+  --chart-5: #605d52;
+
+  --sidebar: #f8f4f0;
+  --sidebar-foreground: #201515;
+  --sidebar-primary: #ff4f00;
+  --sidebar-primary-foreground: #fffefb;
+  --sidebar-accent: #ece5d6;
+  --sidebar-accent-foreground: #201515;
+  --sidebar-border: #e8e2d6;
+  --sidebar-ring: #ff4f00;
+}
+
+.dark {
+  --background: #14100e;
+  --foreground: #f8f4f0;
+  --card: #1f1815;
+  --card-foreground: #f8f4f0;
+  --popover: #1f1815;
+  --popover-foreground: #f8f4f0;
+  --primary: #ff4f00;
+  --primary-foreground: #fffefb;
+  --secondary: #2a221d;
+  --secondary-foreground: #f8f4f0;
+  --muted: #2a221d;
+  --muted-foreground: #a39a8a;
+  --accent: #2a221d;
+  --accent-foreground: #f8f4f0;
+  --destructive: #cf202f;
+  --border: #2a221d;
+  --input: #2a221d;
+  --ring: #ff4f00;
+
+  --chart-1: #ff4f00;
+  --chart-2: #f8f4f0;
+  --chart-3: #605d52;
+  --chart-4: #939084;
+  --chart-5: #c5c0b1;
+
+  --sidebar: #1f1815;
+  --sidebar-foreground: #f8f4f0;
+  --sidebar-primary: #ff4f00;
+  --sidebar-primary-foreground: #fffefb;
+  --sidebar-accent: #2a221d;
+  --sidebar-accent-foreground: #f8f4f0;
+  --sidebar-border: #2a221d;
+  --sidebar-ring: #ff4f00;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .font-display {
+    font-family: 'Manrope', 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+  }
+}
+
+/* Hide native scrollbars across the app but keep scrolling functional */
+html,
+body,
+#root {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-x: none;
+}
+
+*::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.scrollable {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Speaking overlay rings animation */
+.speaking-ring {
+  position: absolute;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0));
+  animation: speaking-pulse 1600ms cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+  opacity: 0.9;
+}
+.speaking-ring.delay-150 {
+  animation-delay: 150ms;
+}
+.speaking-ring.delay-300 {
+  animation-delay: 300ms;
+}
+
+@keyframes speaking-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  60% {
+    transform: scale(1.6);
+    opacity: 0.05;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   WhisprTypr Design System
+   Inspired by Zapier — warm cream + coffee ink + orange
+   ============================================ */
+
+/* Hero band — dark coffee-ink (polarity-flipped) */
+.hero-band-dark {
+  background: #201515;
+  color: #fffefb;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-band-dark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(255, 79, 0, 0.18), transparent 45%),
+    radial-gradient(circle at 10% 90%, rgba(255, 254, 251, 0.05), transparent 50%);
+  pointer-events: none;
+}
+
+/* Product UI mockup card — floating dark surface on hero */
+.product-ui-card-dark {
+  background: #2f2a26;
+  color: #fffefb;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #36342e;
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.45);
+}
+
+/* Cream feature card — Zapier canvas-soft */
+.card-feature-cream {
+  background: #f8f4f0;
+  color: #201515;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+/* Stat card — white surface with warm hairline */
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e8e2d6;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.stat-card:hover {
+  border-color: #c5c0b1;
+  box-shadow: 0 8px 24px -16px rgba(32, 21, 21, 0.18);
+}
+
+/* Paper card — general content card (white) */
+.paper-card {
+  background: #ffffff;
+  border: 1px solid #e8e2d6;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+.paper-card-interactive {
+  background: #ffffff;
+  border: 1px solid #e8e2d6;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+.paper-card-interactive:hover {
+  border-color: #201515;
+  box-shadow: 0 12px 28px -20px rgba(32, 21, 21, 0.22);
+}
+
+/* Paper input — warm hairline border */
+.paper-input {
+  background: #ffffff;
+  border: 1px solid #201515;
+  border-radius: 6px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.paper-input:focus {
+  border-color: #ff4f00;
+  box-shadow: 0 0 0 3px rgba(255, 79, 0, 0.12);
+  outline: none;
+}
+
+/* Primary button — Zapier orange (12px radius, NOT pill) */
+.paper-button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #ff4f00;
+  color: #fffefb;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+  min-height: 2.75rem;
+}
+.paper-button-primary:hover {
+  background: #e64500;
+}
+.paper-button-primary:active {
+  transform: scale(0.98);
+}
+.paper-button-primary.size-md {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  min-height: 2.25rem;
+  gap: 0.375rem;
+}
+.paper-button-primary.size-sm {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  min-height: 1.75rem;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+/* Primary pill (kept name to avoid touching legacy callers — pill variant for compact CTAs) */
+.paper-button-pill-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #ff4f00;
+  color: #fffefb;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+.paper-button-pill-cta:hover {
+  background: #e64500;
+}
+.paper-button-pill-cta:active {
+  transform: scale(0.98);
+}
+
+/* Secondary button — coffee-ink fill */
+.paper-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #f8f4f0;
+  color: #201515;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+  min-height: 2.75rem;
+}
+.paper-button-secondary:hover {
+  background: #ece5d6;
+}
+.paper-button-secondary:active {
+  transform: scale(0.98);
+}
+.paper-button-secondary.size-md {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  min-height: 2.25rem;
+  gap: 0.375rem;
+}
+.paper-button-secondary.size-sm {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  min-height: 1.75rem;
+  gap: 0.25rem;
+}
+
+/* Outline button on dark hero */
+.paper-button-outline-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: #fffefb;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 254, 251, 0.28);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+  min-height: 2.75rem;
+}
+.paper-button-outline-dark:hover {
+  background: rgba(255, 254, 251, 0.06);
+  border-color: rgba(255, 254, 251, 0.45);
+}
+.paper-button-outline-dark:active {
+  transform: scale(0.98);
+}
+
+/* Ghost / tertiary button */
+.paper-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: #201515;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.009em;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  white-space: nowrap;
+}
+.paper-button:hover {
+  background: rgba(32, 21, 21, 0.05);
+}
+
+/* Outline button on light surface (1px ink border) */
+.paper-button-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: #201515;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #201515;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+  min-height: 2.75rem;
+}
+.paper-button-outline:hover {
+  background: rgba(32, 21, 21, 0.05);
+}
+.paper-button-outline:active {
+  transform: scale(0.98);
+}
+.paper-button-outline.size-md {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  min-height: 2.25rem;
+  gap: 0.375rem;
+}
+.paper-button-outline.size-sm {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  min-height: 1.75rem;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+/* Badge pill — cream surface */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #f8f4f0;
+  color: #201515;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+/* Eyebrow — uppercase Degular Display style */
+.eyebrow-uppercase {
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.071em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #201515;
+}
+
+/* Number display — Manrope 500 tabular figures */
+.number-display {
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Display scale helpers — Manrope at hero / display scale */
+.display-hero {
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  font-size: 2.75rem;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.display-lg {
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+.display-sm {
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+.title-lg {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+.title-md {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+.title-sm {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+.body-lg {
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.012em;
+}
+.body-md {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+.body-sm {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+.caption {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+.caption-strong {
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.071em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Icon plate — cream circular icon container (warm) */
+.icon-plate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: #f8f4f0;
+  color: #201515;
+}
+.icon-plate-dark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: #2f2a26;
+  color: #fffefb;
+  border: 1px solid #36342e;
+}
+.icon-plate-orange {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: rgba(255, 79, 0, 0.12);
+  color: #ff4f00;
+}
+
+/* Sidebar nav item — minimal Zapier-style */
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #605d52;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  text-align: left;
+  letter-spacing: -0.005em;
+}
+.sidebar-nav-item:hover {
+  color: #201515;
+}
+.sidebar-nav-item.active {
+  color: #201515;
+  background: #fffefb;
+  box-shadow: 0 1px 2px rgba(32, 21, 21, 0.04);
+}
+.sidebar-nav-item .nav-indicator {
+  width: 3px;
+  height: 16px;
+  border-radius: 999px;
+  background: transparent;
+  margin-left: -0.5rem;
+  transition: background-color 0.15s ease;
+}
+.sidebar-nav-item.active .nav-indicator {
+  background: #ff4f00;
+}
+
+/* Utility — warm palette */
+.text-ink {
+  color: #201515;
+}
+.text-ink-soft {
+  color: #2f2a26;
+}
+.text-ink-mid {
+  color: #36342e;
+}
+.text-body {
+  color: #605d52;
+}
+.text-body-mid {
+  color: #939084;
+}
+.text-muted {
+  color: #939084;
+}
+.text-muted-soft {
+  color: #c5c0b1;
+}
+.text-hairline {
+  color: #e8e2d6;
+}
+.text-on-dark {
+  color: #fffefb;
+}
+.text-on-dark-soft {
+  color: #c5c0b1;
+}
+.text-on-dark-muted {
+  color: #939084;
+}
+.text-primary {
+  color: #ff4f00;
+}
+.text-semantic-up {
+  color: #05b169;
+}
+.text-semantic-down {
+  color: #cf202f;
+}
+
+.bg-canvas {
+  background: #fffefb;
+}
+.bg-canvas-soft {
+  background: #f8f4f0;
+}
+.bg-surface-soft {
+  background: #f8f4f0;
+}
+.bg-surface-card {
+  background: #f8f4f0;
+}
+.bg-surface-strong {
+  background: #ece5d6;
+}
+.bg-surface-dark {
+  background: #201515;
+}
+.bg-surface-dark-elevated {
+  background: #2f2a26;
+}
+
+.border-hairline {
+  border-color: #e8e2d6;
+}
+.border-hairline-soft {
+  border-color: #ece5d6;
+}
+
+/* Animation utilities */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

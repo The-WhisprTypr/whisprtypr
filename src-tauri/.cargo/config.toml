@@ -1,0 +1,4 @@
+[env]
+CMAKE = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe"
+LIBCLANG_PATH = "C:\\Program Files\\LLVM\\bin"
+SENTRY_DSN="https://a1f700cca9038a0e3f19942ae6cc963f@o4512084761640960.ingest.de.sentry.io/4512085194309712"
