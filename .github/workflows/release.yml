@@ -183,6 +183,8 @@ jobs:
           $config = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
           $config.bundle.windows.certificateThumbprint = $env:WINDOWS_CERTIFICATE_THUMBPRINT
           $config.bundle.windows.allowDowngrades = $false
+          # Disable timestamp URL in CI - timestamp servers may be unreachable
+          $config.bundle.windows.timestampUrl = $null
           $config | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $configPath -Encoding utf8
 
       - name: Setup Linux dependencies
