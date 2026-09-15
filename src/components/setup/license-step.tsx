@@ -247,7 +247,7 @@ export function LicenseStep({ onNext, onBack }: LicenseStepProps) {
 
               <div className="pt-4 mt-4 border-t border-hairline-soft text-center">
                 <button
-                  onClick={() => openUrl("https://trywhisprtypr.johuniq.tech")}
+                  onClick={() => openUrl("https://whisprtypr.app")}
                   className="paper-button cursor-pointer"
                 >
                   Purchase a license

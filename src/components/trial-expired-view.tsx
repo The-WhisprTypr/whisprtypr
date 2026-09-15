@@ -123,7 +123,7 @@ export function TrialExpiredView({
                       </p>
                       <Button
                         className="mt-3 w-full"
-                        onClick={() => openUrl("https://trywhisprtypr.johuniq.tech")}
+                        onClick={() => openUrl("https://whisprtypr.app")}
                       >
                         <ExternalLink className="mr-2 h-4 w-4" />
                         Purchase License

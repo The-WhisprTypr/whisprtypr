@@ -40,7 +40,7 @@ const ratingLabels: Record<number, string> = {
   5: "Loving it",
 };
 
-const DISCUSSIONS_URL = "https://github.com/johuniq/whisprtypr/discussions/new";
+const DISCUSSIONS_URL = "https://github.com/The-WhisprTypr/whisprtypr/discussions/new";
 
 export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
   const { success: toastSuccess, error: toastError } = useToast();

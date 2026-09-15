@@ -389,13 +389,13 @@ export function LicenseView({ onClose: _onClose, onLicenseChange }: LicenseViewP
                     </div>
                     <div className="flex flex-wrap gap-2 @xl:justify-end">
                       <button
-                        onClick={() => openUrl("https://github.com/johuniq/whisprtypr")}
+                        onClick={() => openUrl("https://github.com/The-WhisprTypr/whisprtypr")}
                         className="paper-button-primary cursor-pointer"
                       >
                         Learn more
                       </button>
                       <button
-                        onClick={() => openUrl("https://github.com/johuniq/whisprtypr/releases/latest")}
+                        onClick={() => openUrl("https://github.com/The-WhisprTypr/whisprtypr/releases/latest")}
                         className="paper-button-outline cursor-pointer"
                       >
                         Releases

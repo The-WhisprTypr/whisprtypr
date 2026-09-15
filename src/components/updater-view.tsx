@@ -319,7 +319,7 @@ export function UpdaterView() {
           {/* Secondary action: open releases on GitHub */}
           <button
             onClick={() =>
-              openUrl("https://github.com/johuniq/whisprtypr/releases/latest")
+              openUrl("https://github.com/The-WhisprTypr/whisprtypr/releases/latest")
             }
             className="paper-button-outline size-md cursor-pointer"
           >

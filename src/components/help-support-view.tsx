@@ -47,13 +47,13 @@ const supportLinks: SupportLink[] = [
     icon: BookOpen,
     title: "Documentation",
     text: "Read the WhisprTypr documentation and guides.",
-    url: "https://github.com/johuniq/whisprtypr#readme",
+    url: "https://github.com/The-WhisprTypr/whisprtypr#readme",
   },
   {
     icon: Bug,
     title: "Report a bug",
     text: "Submit a bug report to help us improve.",
-    url: "https://github.com/johuniq/whisprtypr/issues",
+    url: "https://github.com/The-WhisprTypr/whisprtypr/issues",
   },
 ];
 

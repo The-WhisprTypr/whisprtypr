@@ -66,8 +66,8 @@
     "category": "Utility",
     "shortDescription": "Wave your voice into text at your cursor",
     "longDescription": "WhisprTypr is an open-source desktop dictation app that turns your voice into polished text at your cursor using local speech models. Features include push-to-talk and toggle recording modes, model management, optional text injection, transcription history, and file transcription support.",
-    "publisher": "Johuniq",
-    "copyright": "Copyright (c) 2026 Johuniq",
+    "publisher": "WhisprTypr",
+    "copyright": "Copyright (c) 2026 WhisprTypr",
     "licenseFile": "../LICENSE",
     "macOS": {
       "entitlements": "WhisprTypr.entitlements",
@@ -101,14 +101,12 @@
       },
       "allowDowngrades": false,
       "nsis": {
-        "template": null,
         "installerIcon": "icons/icon.ico",
-        "headerImage": null,
-        "sidebarImage": null,
         "installMode": "currentUser",
         "languages": ["English"],
         "displayLanguageSelector": false,
-        "compression": "lzma"
+        "compression": "zlib",
+        "startMenuFolder": "WhisprTypr"
       }
     }
   },
@@ -120,7 +118,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE5ODIzM0Q0NDk2N0FGQjkKUldTNXIyZEoxRE9DcVFMV0t2dkpHQmdzcFU4STF1Y3BJMW1hdkMxTnYwR3BLSmpkeFNoMG1HYysK",
       "endpoints": [
-        "https://github.com/johuniq/whisprtypr/releases/latest/download/latest.json"
+        "https://github.com/The-WhisprTypr/whisprtypr/releases/latest/download/latest.json"
       ],
       "windows": {
         "installMode": "passive"

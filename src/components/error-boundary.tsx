@@ -51,9 +51,9 @@ export class ErrorBoundary extends Component<Props, State> {
   private handleReportIssue = async () => {
     try {
       const { openUrl } = await import("@tauri-apps/plugin-opener");
-      await openUrl("https://github.com/johuniq/whisprtypr/issues");
+      await openUrl("https://github.com/The-WhisprTypr/whisprtypr/issues");
     } catch (err) {
-      window.open("https://github.com/johuniq/whisprtypr/issues", "_blank");
+      window.open("https://github.com/The-WhisprTypr/whisprtypr/issues", "_blank");
     }
   };
 

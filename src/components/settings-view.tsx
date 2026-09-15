@@ -614,7 +614,7 @@ export function SettingsView(_props: SettingsViewProps) {
               </p>
               <div className="h-px w-10 my-0.5" style={{ background: "#36342e" }} />
               <p className="caption text-on-dark-muted">
-                © {new Date().getFullYear()} Johuniq · All rights reserved
+                © {new Date().getFullYear()} WhisprTypr · All rights reserved
               </p>
             </div>
           </section>
