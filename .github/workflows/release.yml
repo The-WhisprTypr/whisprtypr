@@ -259,18 +259,35 @@ jobs:
       - name: Generate updater manifest and checksums
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
         run: |
           set -euo pipefail
           mkdir -p release-assets
-          gh release download "$GITHUB_REF_NAME" \
-            --repo "$GITHUB_REPOSITORY" \
-            --dir release-assets \
-            --clobber
+          
+          # List and download all assets from the release
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets" \
+            --jq '.[] | "\(.id) \(.name)"' | while read -r asset_id asset_name; do
+            echo "Downloading: $asset_name (ID: $asset_id)"
+            gh api \
+              -H "Accept: application/octet-stream" \
+              "/repos/$GITHUB_REPOSITORY/releases/assets/$asset_id" \
+              > "release-assets/$asset_name"
+          done
+          
+          # Verify we have assets
+          if [ ! "$(ls -A release-assets)" ]; then
+            echo "::error::No assets found in release $RELEASE_ID"
+            exit 1
+          fi
+          
+          echo "Downloaded $(ls -1 release-assets | wc -l) assets"
 
           VERSION="${GITHUB_REF_NAME#v}"
           PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           RELEASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}"
-          NOTES=$(gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json body -q '.body' 2>/dev/null || echo "")
+          NOTES=$(gh api "/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" --jq '.body' 2>/dev/null || echo "")
 
           # Build latest.json for the Tauri updater plugin.
           # Each platform's entry needs the download URL and the signature
