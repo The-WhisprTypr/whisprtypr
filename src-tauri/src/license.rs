@@ -29,7 +29,7 @@ use crate::security;
 const POLAR_API_BASE: &str = "https://api.polar.sh/v1/customer-portal/license-keys";
 
 /// Your Polar.sh Organization UUID - get from polar.sh dashboard settings
-const POLAR_ORG_ID: &str = "d076d42a-b873-40f7-9486-a731bfbb8eb7";
+const POLAR_ORG_ID: &str = "51b31898-f34d-4f72-a175-26c8f6c8d828";
 
 /// Offline grace period in hours - license works offline for this duration
 const OFFLINE_GRACE_HOURS: i64 = 168; // 7 days
@@ -227,6 +227,27 @@ pub struct PolarLicenseKey {
     pub expires_at: Option<String>,
 }
 
+/// Full license key response with all activations (from GET /license-keys/{id})
+#[derive(Debug, Deserialize, Clone)]
+#[allow(dead_code)]
+pub struct LicenseKeyWithActivations {
+    pub id: String,
+    pub organization_id: String,
+    pub customer_id: String,
+    pub customer: Option<PolarCustomer>,
+    pub benefit_id: String,
+    pub key: String,
+    pub display_key: String,
+    pub status: String,
+    pub limit_activations: Option<i32>,
+    pub usage: i32,
+    pub limit_usage: Option<i32>,
+    pub validations: i32,
+    pub last_validated_at: Option<String>,
+    pub expires_at: Option<String>,
+    pub activations: Vec<PolarActivation>,
+}
+
 /// Response from /activate endpoint
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
@@ -283,6 +304,8 @@ pub struct PolarError {
 pub struct CachedLicense {
     /// The original license key (stored securely)
     pub license_key: String,
+    /// License Key ID from Polar (required to fetch full license key with activations)
+    pub license_key_id: String,
     /// Activation ID from Polar (required for validation)
     pub activation_id: String,
     /// Device ID this license was activated on
@@ -311,7 +334,7 @@ pub struct CachedLicense {
     pub cache_version: i32,
 }
 
-const CACHE_VERSION: i32 = 2;
+const CACHE_VERSION: i32 = 3;
 
 #[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
@@ -459,6 +482,7 @@ fn get_cache_path() -> Option<PathBuf> {
 fn calculate_integrity_hash(cache: &CachedLicense) -> String {
     let mut hasher = Sha256::new();
     hasher.update(cache.license_key.as_bytes());
+    hasher.update(cache.license_key_id.as_bytes());
     hasher.update(cache.activation_id.as_bytes());
     hasher.update(cache.device_id.as_bytes());
     hasher.update(cache.benefit_id.as_bytes());
@@ -765,6 +789,7 @@ self.mark_online_attempt();
             // Store in local cache (initial activation record)
             let mut cache = CachedLicense {
                 license_key: license_key.to_string(),
+                license_key_id: data.license_key.id.clone(),
                 activation_id: data.id.clone(),
                 device_id: device_id.clone(),
                 device_label: device_label.clone(),
@@ -787,14 +812,13 @@ self.mark_online_attempt();
             // Persist initial cache
             store_cache(&cache)?;
 
-            // After activation, verify the activation can be validated without
-            // consuming any metered license usage.
+            // After activation, verify the activation can be validated and increment usage
             match self
                 .perform_validate(
                     &cache.license_key,
                     &cache.activation_id,
                     Some(cache.benefit_id.clone()),
-                    None,
+                    Some(1),
                 )
                 .await
             {
@@ -924,12 +948,34 @@ self.mark_online_attempt();
                     &cached.license_key,
                     &cached.activation_id,
                     Some(cached.benefit_id.clone()),
-                    None,
+                    Some(1), // Increment usage by 1 on each validation
                 )
                 .await
             {
                 Ok(data) => {
                     let license_status = self.check_license_status_from_validate(&data);
+
+                    // Check activation count against limit
+                    if let Some(limit) = data.limit_activations {
+                        if limit > 0 {
+                            // Fetch full license key to get all activations
+                            if let Ok(license_key) = self.get_license_key(&cached.license_key_id).await {
+                                let activation_count = license_key.activations.len() as i32;
+                                if activation_count >= limit {
+                                    warn!(
+                                        "Activation limit reached: {} activations, limit: {}",
+                                        activation_count, limit
+                                    );
+                                    let _ = clear_cache();
+                                    return Err(format!(
+                                        "Activation limit reached ({}/{}). Please deactivate from another device first.",
+                                        activation_count, limit
+                                    ));
+                                }
+                                info!("Activation count: {}/{}", activation_count, limit);
+                            }
+                        }
+                    }
 
                     info!("License validated successfully!");
                     info!("  Status: {} -> {:?}", data.status, license_status);
@@ -1008,13 +1054,36 @@ self.mark_online_attempt();
         info!("Validating license from stored activation...");
 
         let data = self
-            .perform_validate(license_key, activation_id, None, None)
+            .perform_validate(license_key, activation_id, None, Some(1))
             .await?;
 
         let license_status = self.check_license_status_from_validate(&data);
 
+        // Check activation count against limit
+        if let Some(limit) = data.limit_activations {
+            if limit > 0 {
+                // Fetch full license key to get all activations
+                if let Ok(license_key_info) = self.get_license_key(&data.id).await {
+                    let activation_count = license_key_info.activations.len() as i32;
+                    if activation_count >= limit {
+                        warn!(
+                            "Activation limit reached: {} activations, limit: {}",
+                            activation_count, limit
+                        );
+                        let _ = clear_cache();
+                        return Err(format!(
+                            "Activation limit reached ({}/{}). Please deactivate from another device first.",
+                            activation_count, limit
+                        ));
+                    }
+                    info!("Activation count: {}/{}", activation_count, limit);
+                }
+            }
+        }
+
         let cache = CachedLicense {
             license_key: license_key.to_string(),
+            license_key_id: data.id.clone(),
             activation_id: data
                 .activation
                 .as_ref()
@@ -1237,6 +1306,9 @@ self.mark_online_attempt();
             conditions: Some(get_device_conditions(&get_device_id())),
         };
 
+        let body_json = serde_json::to_string(&request).unwrap_or_default();
+        debug!("validate request body: {}", body_json);
+
         let url = format!("{}/validate", self.api_base);
 
         let response = self
@@ -1255,6 +1327,10 @@ self.mark_online_attempt();
             let data: ValidateResponse = serde_json::from_str(&body).map_err(|e| {
                 format!("Failed to parse validate response: {} - Body: {}", e, body)
             })?;
+            debug!(
+                "validate resp: usage={} limit_usage={:?} validations={} status={}",
+                data.usage, data.limit_usage, data.validations, data.status
+            );
             return Ok(data);
         }
 
@@ -1275,6 +1351,39 @@ self.mark_online_attempt();
                 "License validation request failed (non-authoritative). HTTP {}",
                 status.as_u16()
             ))
+        }
+    }
+
+    /// Fetch full license key info including all activations
+    /// Uses GET /v1/customer-portal/license-keys/{license_key_id}
+    async fn get_license_key(&self, license_key_id: &str) -> Result<LicenseKeyWithActivations, String> {
+        let url = format!("{}/{}", self.api_base, license_key_id);
+        debug!("GET {}", url);
+
+        let response = self
+            .client
+            .get(&url)
+            .header("Content-Type", "application/json")
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+
+        debug!("Response status: {}", status);
+        debug!("Response body: {}", body);
+
+        if status.is_success() {
+            let data: LicenseKeyWithActivations = serde_json::from_str(&body)
+                .map_err(|e| format!("Failed to parse response: {} - Body: {}", e, body))?;
+            Ok(data)
+        } else if status.as_u16() == 404 {
+            error!("License key not found");
+            Err("License key not found".to_string())
+        } else {
+            error!("Failed to fetch license key: {} - {}", status, body);
+            Err(format!("Failed to fetch license key: HTTP {}", status))
         }
     }
 }
@@ -1391,6 +1500,7 @@ mod tests {
     fn test_cached_license_rejects_future_validation_time() {
         let cache = CachedLicense {
             license_key: "test-license".to_string(),
+            license_key_id: "test-license-key-id".to_string(),
             activation_id: "test-activation".to_string(),
             device_id: get_device_id(),
             device_label: get_device_label(),
@@ -1412,6 +1522,7 @@ mod tests {
     fn fresh_granted_cache() -> CachedLicense {
         CachedLicense {
             license_key: "TEST-KEY-1234-ABCD".to_string(),
+            license_key_id: "test-license-key-id".to_string(),
             activation_id: "act_123".to_string(),
             device_id: get_device_id(),
             device_label: get_device_label(),
