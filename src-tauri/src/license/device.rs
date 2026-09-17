@@ -6,7 +6,10 @@ use std::time::Duration;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
-use crate::license::models::{CachedLicense, CACHE_VERSION, CREATE_NO_WINDOW};
+use crate::license::models::{CachedLicense, CACHE_VERSION};
+
+#[cfg(target_os = "windows")]
+use crate::license::models::CREATE_NO_WINDOW;
 use crate::security;
 
 pub fn get_device_id() -> String {
