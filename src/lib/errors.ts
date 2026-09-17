@@ -1,5 +1,5 @@
 /**
- * User-friendly error messages for WhisprTypr
+ * User-friendly error messages for Whisprtypr
  * Maps technical errors to actionable user messages
  */
 

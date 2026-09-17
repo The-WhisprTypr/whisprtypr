@@ -1,5 +1,5 @@
-import { Logo } from "@/components/logo";
 import { Globe, Keyboard, Mic, Zap } from "@/components/icons";
+import { Logo } from "@/components/logo";
 
 interface WelcomeStepProps {
   onNext: () => void;
@@ -38,7 +38,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
             <div className="flex flex-col items-center text-center gap-5 p-8 sm:p-10">
               <Logo size="md" />
               <p className="text-[28px] font-medium leading-tight tracking-tight text-on-dark">
-                Welcome to <span className="text-primary">WhisprTypr</span>.
+                Welcome to <span className="text-primary">Whisprtypr</span>.
               </p>
               <p className="text-[15px] leading-relaxed text-on-dark-soft max-w-md">
                 Your voice, at your cursor. Set up takes about 2 minutes.
@@ -53,7 +53,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
                 <Zap className="h-4 w-4" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-medium tracking-[0.1em] uppercase leading-none text-ink-mid">Why WhisprTypr</p>
+                <p className="text-[11px] font-medium tracking-[0.1em] uppercase leading-none text-ink-mid">Why Whisprtypr</p>
                 <h3 className="text-[15px] font-semibold tracking-tight text-ink mt-1">
                   Built for real workflows
                 </h3>

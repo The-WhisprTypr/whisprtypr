@@ -1,5 +1,5 @@
 /**
- * Auto-updater API for WhisprTypr
+ * Auto-updater API for Whisprtypr
  * Handles checking for updates and installing them from GitHub releases
  */
 

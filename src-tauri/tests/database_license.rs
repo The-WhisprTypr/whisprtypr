@@ -44,7 +44,10 @@ fn save_license_persists_active_license_data() {
     assert_eq!(stored.activation_id, license.activation_id);
     assert_eq!(stored.status, "active");
     assert!(stored.is_activated);
-    assert_eq!(stored.customer_email, Some("tester@whisprtypr.test".to_string()));
+    assert_eq!(
+        stored.customer_email,
+        Some("tester@whisprtypr.test".to_string())
+    );
     assert_eq!(stored.usage, 3);
     assert_eq!(stored.validations, 4);
 }

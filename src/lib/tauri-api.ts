@@ -1,5 +1,5 @@
 /**
- * Tauri API wrappers for WhisprTypr
+ * Tauri API wrappers for Whisprtypr
  * These functions provide a clean interface to communicate with the Rust backend
  */
 
@@ -7,9 +7,9 @@ import type { AppSettings, WhisperModel } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
 import { readText, writeText } from "@tauri-apps/plugin-clipboard-manager";
 import {
-  isRegistered,
-  register,
-  unregister,
+    isRegistered,
+    register,
+    unregister,
 } from "@tauri-apps/plugin-global-shortcut";
 import { load, Store } from "@tauri-apps/plugin-store";
 

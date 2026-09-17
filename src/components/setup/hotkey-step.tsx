@@ -1,6 +1,6 @@
+import { AlertTriangle, Clipboard, Keyboard, Type } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store";
-import { AlertTriangle, Clipboard, Keyboard, Type } from "@/components/icons";
 import { useEffect, useState } from "react";
 
 interface HotkeyStepProps {
@@ -156,7 +156,7 @@ export function HotkeyStep({ onNext, onBack }: HotkeyStepProps) {
                 Set your <span className="text-primary">shortcut</span>.
               </h2>
               <p className="text-sm text-on-dark-soft max-w-md leading-relaxed">
-                Pick how WhisprTypr activates, where the text goes, and your key combo.
+                Pick how Whisprtypr activates, where the text goes, and your key combo.
               </p>
             </div>
           </section>

@@ -117,15 +117,15 @@ fn custom_vocabulary_replaces_known_terms() {
     let pp = with_vocab(&[
         ("next js", "Next.js"),
         ("tauri", "Tauri"),
-        ("wave e", "WhisprTypr"),
+        ("wave e", "Whisprtypr"),
     ]);
 
     assert_eq!(pp.process("i love next js"), "I love Next.js");
-    assert_eq!(pp.process("built with tauri and react"), "Built with Tauri and react");
     assert_eq!(
-        pp.process("wave e is great"),
-        "WhisprTypr is great"
+        pp.process("built with tauri and react"),
+        "Built with Tauri and react"
     );
+    assert_eq!(pp.process("wave e is great"), "Whisprtypr is great");
 }
 
 #[test]
@@ -156,11 +156,7 @@ fn custom_vocabulary_prefers_longer_phrases() {
 
 #[test]
 fn custom_vocabulary_skips_empty_entries() {
-    let pp = with_vocab(&[
-        ("", "ignored"),
-        ("   ", "ignored"),
-        ("real", "Real"),
-    ]);
+    let pp = with_vocab(&[("", "ignored"), ("   ", "ignored"), ("real", "Real")]);
 
     assert_eq!(pp.process("that is real"), "That is Real");
 }
@@ -176,10 +172,10 @@ fn custom_vocabulary_preserves_canonical_written_form() {
 
 #[test]
 fn custom_vocabulary_runs_in_voice_command_extractor() {
-    let pp = with_vocab(&[("wave e", "WhisprTypr")]);
+    let pp = with_vocab(&[("wave e", "Whisprtypr")]);
 
     let result = pp.extract_voice_commands("wave e delete that");
-    assert!(result.contains("WhisprTypr"), "got: {:?}", result);
+    assert!(result.contains("Whisprtypr"), "got: {:?}", result);
     assert!(
         result.contains("[[DELETE_LAST]]"),
         "expected DELETE_LAST marker in {:?}",

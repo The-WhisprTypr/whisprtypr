@@ -5,7 +5,9 @@ use whisprtypr_lib::database::{Database, LicenseData};
 use whisprtypr_lib::downloader::ModelDownloader;
 use whisprtypr_lib::license::{clear_cache, LicenseManager, LicenseStatus};
 use whisprtypr_lib::post_process::PostProcessor;
-use whisprtypr_lib::{calculate_trial_integrity_hash, db_license_allows_usage, has_active_trial_core};
+use whisprtypr_lib::{
+    calculate_trial_integrity_hash, db_license_allows_usage, has_active_trial_core,
+};
 
 fn test_database() -> (tempfile::TempDir, Database) {
     let dir = tempfile::tempdir().unwrap();

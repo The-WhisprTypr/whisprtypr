@@ -1,24 +1,24 @@
+import {
+    Activity,
+    AlertTriangle,
+    Circle,
+    RefreshCw,
+    RotateCcw,
+    Trash2,
+} from "@/components/icons";
 import { Switch } from "@/components/ui/switch";
 import { UpdaterView } from "@/components/updater-view";
 import { useToast } from "@/hooks/use-toast";
 import { factoryReset } from "@/lib/data-management";
 import { useAppStore } from "@/store";
-import {
-  Activity,
-  AlertTriangle,
-  Circle,
-  RefreshCw,
-  RotateCcw,
-  Trash2,
-} from "@/components/icons";
 import { useState } from "react";
 
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogTrigger,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 interface AdvancedViewProps {
@@ -105,7 +105,7 @@ export function AdvancedView(_props: AdvancedViewProps) {
               <div className="min-w-0 flex-1">
                 <p className="eyebrow-uppercase text-ink-mid">Diagnostics</p>
                 <h3 className="title-md text-ink mt-0.5">
-                  Help improve WhisprTypr with anonymous diagnostics
+                  Help improve Whisprtypr with anonymous diagnostics
                 </h3>
               </div>
               <Switch
@@ -135,7 +135,7 @@ export function AdvancedView(_props: AdvancedViewProps) {
                   Reset options
                 </p>
                 <h3 className="title-md text-ink mt-0.5">
-                  Re-run setup or wipe WhisprTypr back to a clean state.
+                  Re-run setup or wipe Whisprtypr back to a clean state.
                 </h3>
               </div>
             </div>
@@ -187,7 +187,7 @@ export function AdvancedView(_props: AdvancedViewProps) {
                             Re-run the setup wizard?
                           </p>
                           <p className="body-sm text-body-muted mt-1">
-                            The next time WhisprTypr launches, you'll go through the
+                            The next time Whisprtypr launches, you'll go through the
                             setup wizard again. Your history, settings, and
                             downloaded models stay intact.
                           </p>
@@ -223,7 +223,7 @@ export function AdvancedView(_props: AdvancedViewProps) {
                 <div className="min-w-0">
                   <p className="body-sm-strong text-ink">Reset app data</p>
                   <p className="caption text-body-muted mt-0.5">
-                    Completely reset WhisprTypr to its initial state
+                    Completely reset Whisprtypr to its initial state
                   </p>
                   <ul className="mt-1.5 space-y-0.5 caption text-body-muted">
                     <li className="flex items-center gap-1.5">

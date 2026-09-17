@@ -1,4 +1,4 @@
-// WhisprTypr - Type Definitions
+// Whisprtypr - Type Definitions
 
 export type CloudProviderId = "groq" | "openai" | "deepgram" | "mistral" | "custom";
 
@@ -322,7 +322,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   diagnosticsEnabled: true,
   autoCheckForUpdates: false,
   customVocabulary: [
-    { spoken: "wave e", written: "WhisprTypr" },
+    { spoken: "wave e", written: "Whisprtypr" },
     { spoken: "t a u r i", written: "Tauri" },
     { spoken: "next js", written: "Next.js" },
     { spoken: "rust lang", written: "Rust" },

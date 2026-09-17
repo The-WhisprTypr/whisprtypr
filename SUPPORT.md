@@ -1,6 +1,6 @@
 # Support
 
-WhisprTypr support happens through GitHub.
+Whisprtypr support happens through GitHub.
 
 ## Questions
 
@@ -11,7 +11,7 @@ Use GitHub Discussions if they are enabled. If not, open an issue and choose the
 Open a bug report with:
 
 - Operating system and version
-- WhisprTypr version or commit
+- Whisprtypr version or commit
 - Steps to reproduce
 - Expected behavior
 - Actual behavior

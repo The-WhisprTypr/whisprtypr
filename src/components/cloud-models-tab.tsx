@@ -1,30 +1,30 @@
-import { useState } from "react";
 import {
-  AlertCircle,
-  Check,
-  Circle,
-  ExternalLink,
-  HardDrive,
-  Key,
-  Loader2,
-  ShieldCheck,
-  Star,
-  Trash2,
-  Zap,
+    AlertCircle,
+    Check,
+    Circle,
+    ExternalLink,
+    HardDrive,
+    Key,
+    Loader2,
+    ShieldCheck,
+    Star,
+    Trash2,
+    Zap,
 } from "@/components/icons";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 import {
-  deleteCloudProvider,
-  saveCloudProvider,
-  testCloudConnection,
+    deleteCloudProvider,
+    saveCloudProvider,
+    testCloudConnection,
 } from "@/lib/cloud-api";
+import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store";
 import type {
-  CloudProviderId,
-  CloudProviderInfo,
-  WhisperModel,
+    CloudProviderId,
+    CloudProviderInfo,
+    WhisperModel,
 } from "@/types";
+import { useState } from "react";
 
 interface CloudModelsTabProps {
   cloudModels: WhisperModel[];
@@ -255,7 +255,7 @@ export function CloudModelsTab({
               </div>
             </div>
             <p className="caption text-on-dark-soft leading-relaxed">
-              Audio is transmitted straight to your cloud provider's official endpoints. WhisprTypr has no middleman servers.
+              Audio is transmitted straight to your cloud provider's official endpoints. Whisprtypr has no middleman servers.
             </p>
           </div>
         </div>

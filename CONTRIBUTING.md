@@ -1,6 +1,6 @@
-# Contributing To WhisprTypr
+# Contributing To Whisprtypr
 
-Thanks for helping improve WhisprTypr. This guide keeps contributions predictable and reviewable.
+Thanks for helping improve Whisprtypr. This guide keeps contributions predictable and reviewable.
 
 ## Development Setup
 
@@ -11,7 +11,7 @@ Install the required tools:
 - Rust stable, minimum Rust 1.81
 - Platform dependencies required by Tauri
 
-WhisprTypr currently targets Windows and macOS. Linux desktop builds are not supported.
+Whisprtypr currently targets Windows and macOS. Linux desktop builds are not supported.
 
 Install dependencies:
 
@@ -57,7 +57,7 @@ Use `-j 1` on Windows if parallel Rust builds run out of paging-file space while
 Use the bug report issue template. Include:
 
 - Operating system and version
-- WhisprTypr version or commit
+- Whisprtypr version or commit
 - Steps to reproduce
 - Expected behavior
 - Actual behavior

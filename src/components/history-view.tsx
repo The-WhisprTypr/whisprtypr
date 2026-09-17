@@ -1,49 +1,49 @@
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+    AlertCircle,
+    Check,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    Clock,
+    Copy,
+    Cpu,
+    Download,
+    History as HistoryIcon,
+    Loader2,
+    Search,
+    Trash2,
+    X,
+} from "@/components/icons";
 import {
-  clearTranscriptionHistory,
-  deleteTranscriptionItem,
-  getTranscriptionHistory,
-  getTranscriptionHistoryCount,
-  reportError,
-  type TranscriptionHistoryItem,
-} from "@/lib/voice-api";
-import { downloadFile, exportAppData } from "@/lib/data-management";
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import {
-  AlertCircle,
-  Check,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  Clock,
-  Copy,
-  Cpu,
-  Download,
-  History as HistoryIcon,
-  Loader2,
-  Search,
-  Trash2,
-  X,
-} from "@/components/icons";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { downloadFile, exportAppData } from "@/lib/data-management";
 import { cn } from "@/lib/utils";
+import {
+    clearTranscriptionHistory,
+    deleteTranscriptionItem,
+    getTranscriptionHistory,
+    getTranscriptionHistoryCount,
+    reportError,
+    type TranscriptionHistoryItem,
+} from "@/lib/voice-api";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const DEFAULT_PAGE_SIZE = 20;
 const PAGE_SIZE_OPTIONS = [20, 50, 100] as const;
@@ -210,7 +210,7 @@ export function HistoryView(_props: { onClose: () => void }) {
       setIsExporting(true);
       setActionError(null);
       const data = await exportAppData();
-      const filename = `WhisprTypr-history-${new Date()
+      const filename = `Whisprtypr-history-${new Date()
         .toISOString()
         .slice(0, 10)}.json`;
       const saved = await downloadFile(data, filename);

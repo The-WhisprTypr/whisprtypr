@@ -1,23 +1,23 @@
+import {
+    AlertCircle,
+    Check,
+    Circle,
+    Loader2,
+    RefreshCw,
+    Sparkles,
+} from "@/components/icons";
 import { useToast } from "@/hooks/use-toast";
+import {
+    checkForUpdates,
+    downloadAndInstallUpdate,
+    formatProgress,
+    getCurrentVersion,
+    relaunchApp,
+    type UpdateProgress,
+    type UpdateStatus,
+} from "@/lib/updater-api";
 import { cn, openUrl } from "@/lib/utils";
 import { reportError } from "@/lib/voice-api";
-import {
-  checkForUpdates,
-  downloadAndInstallUpdate,
-  formatProgress,
-  getCurrentVersion,
-  relaunchApp,
-  type UpdateProgress,
-  type UpdateStatus,
-} from "@/lib/updater-api";
-import {
-  AlertCircle,
-  Check,
-  Circle,
-  Loader2,
-  RefreshCw,
-  Sparkles,
-} from "@/components/icons";
 import { useCallback, useEffect, useState } from "react";
 
 export function UpdaterView() {
@@ -187,8 +187,8 @@ export function UpdaterView() {
               {isUpdateAvailable
                 ? `Version ${status.info.version} is ready for you.`
                 : isReady
-                  ? "Update downloaded — restart WhisprTypr to apply it."
-                  : "Keep WhisprTypr current with the latest fixes and features."}
+                  ? "Update downloaded — restart Whisprtypr to apply it."
+                  : "Keep Whisprtypr current with the latest fixes and features."}
             </p>
           </div>
           <span
@@ -257,7 +257,7 @@ export function UpdaterView() {
               />
             </div>
             <p className="caption text-body-muted mt-2">
-              Keep WhisprTypr open while the update downloads.
+              Keep Whisprtypr open while the update downloads.
             </p>
           </div>
         )}
@@ -319,7 +319,7 @@ export function UpdaterView() {
           {/* Secondary action: open releases on GitHub */}
           <button
             onClick={() =>
-              openUrl("https://github.com/The-WhisprTypr/whisprtypr/releases/latest")
+              openUrl("https://github.com/The-Whisprtypr/whisprtypr/releases/latest")
             }
             className="paper-button-outline size-md cursor-pointer"
           >

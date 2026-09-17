@@ -2,10 +2,10 @@
 name = "whisprtypr"
 version = "1.0.0"
 description = "Open-source desktop voice-to-text app with local AI transcription"
-authors = ["The WhisprTypr Team"]
+authors = ["The Whisprtypr Team"]
 edition = "2021"
 license = "AGPL-3.0-only"
-repository = "https://github.com/The-WhisprTypr/whisprtypr"
+repository = "https://github.com/The-Whisprtypr/whisprtypr"
 readme = "../README.md"
 keywords = ["voice", "speech-to-text", "transcription", "whisper", "tauri"]
 categories = ["multimedia::audio"]

@@ -21,9 +21,9 @@ fn database_state_survives_reopen() {
             minimize_to_tray: false,
             post_processing_enabled: false,
             voice_commands_enabled: true,
-        clipboard_mode: true,
-        ..Default::default()
-    })
+            clipboard_mode: true,
+            ..Default::default()
+        })
         .unwrap();
         db.update_app_state(&AppState {
             is_first_launch: false,
@@ -87,7 +87,7 @@ fn database_state_survives_reopen() {
 #[test]
 fn legacy_database_is_migrated_without_losing_existing_state() {
     let dir = tempfile::tempdir().unwrap();
-    let conn = Connection::open(dir.path().join("WhisprTypr.db")).unwrap();
+    let conn = Connection::open(dir.path().join("Whisprtypr.db")).unwrap();
 
     conn.execute_batch(
         "

@@ -1,15 +1,15 @@
-# WhisprTypr
+# Whisprtypr
 
 > Speak at the speed of thought.
 
 Open-source, local-first voice typing for your desktop.
 
-[![Latest Release](https://img.shields.io/github/v/release/The-WhisprTypr/whisprtypr?label=Release)](https://github.com/The-WhisprTypr/whisprtypr/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/The-Whisprtypr/whisprtypr?label=Release)](https://github.com/The-Whisprtypr/whisprtypr/releases/latest)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
 **Hold a hotkey. Speak naturally. Release.** Your words are transcribed, cleaned up, and inserted directly where your cursor is. No switching windows. No breaking your flow. Just speak.
 
-[Download](https://whisprtypr.app) · [Documentation](https://github.com/The-WhisprTypr/whisprtypr/blob/main/README.md) · [Report a Bug](https://github.com/The-WhisprTypr/whisprtypr/issues/new?template=bug_report.yml) · [Contribute](CONTRIBUTING.md)
+[Download](https://whisprtypr.app) · [Documentation](https://github.com/The-Whisprtypr/whisprtypr/blob/main/README.md) · [Report a Bug](https://github.com/The-Whisprtypr/whisprtypr/issues/new?template=bug_report.yml) · [Contribute](CONTRIBUTING.md)
 
 ---
 
@@ -29,16 +29,16 @@ Open-source, local-first voice typing for your desktop.
 
 ## Quick Start
 
-1. Download and install WhisprTypr for your platform.
+1. Download and install Whisprtypr for your platform.
 2. Launch the app and choose a transcription model (local or cloud).
 3. Set your recording hotkey in **Settings → Hotkey**.
 4. Place your cursor in any text field.
 5. Press the shortcut, speak, and release.
-6. WhisprTypr inserts the transcript at your cursor and stores it in local history.
+6. Whisprtypr inserts the transcript at your cursor and stores it in local history.
 
 ## Privacy and Data Flow
 
-WhisprTypr is offline-first. The selected mode determines what leaves your computer:
+Whisprtypr is offline-first. The selected mode determines what leaves your computer:
 
 | Mode | Data Flow |
 |------|-----------|
@@ -54,7 +54,7 @@ WhisprTypr is offline-first. The selected mode determines what leaves your compu
 Requirements: macOS 13 or later, microphone permission, and Accessibility permission for cursor insertion.
 
 1. Download the latest macOS package from [Releases](https://whisprtypr.app).
-2. Open the DMG and drag WhisprTypr to Applications.
+2. Open the DMG and drag Whisprtypr to Applications.
 3. Launch, grant the requested permissions, and download a transcription model.
 4. Set your hotkey and start dictating.
 
@@ -67,12 +67,12 @@ Requirements: 64-bit Windows 10 build 19041 or later, or Windows 11.
 3. Choose a model, set hotkeys, and grant microphone access.
 4. Press the recording hotkey and speak.
 
-> **Note:** WhisprTypr is not yet signed with a Windows code-signing certificate. Windows may show an "Unknown publisher" warning. Click **More info** → **Run anyway** to continue.
+> **Note:** Whisprtypr is not yet signed with a Windows code-signing certificate. Windows may show an "Unknown publisher" warning. Click **More info** → **Run anyway** to continue.
 
 ### Linux
 
 1. Download the latest AppImage, DEB, or RPM from [Releases](https://whisprtypr.app).
-2. **AppImage:** `chmod +x WhisprTypr_*.AppImage` then `./WhisprTypr_*.AppImage`
+2. **AppImage:** `chmod +x Whisprtypr_*.AppImage` then `./Whisprtypr_*.AppImage`
 3. **DEB:** `sudo apt install ./whisprtypr_*.deb`
 4. **RPM:** `sudo dnf install ./whisprtypr-*.rpm`
 5. Complete the setup wizard and start dictating.
@@ -98,7 +98,7 @@ Prerequisites:
 - Tauri v2 platform prerequisites for your operating system
 
 ```sh
-git clone https://github.com/The-WhisprTypr/whisprtypr.git
+git clone https://github.com/The-Whisprtypr/whisprtypr.git
 cd whisprtypr
 pnpm install
 cd src-tauri
@@ -130,12 +130,12 @@ cd src-tauri && cargo test -j 1
 
 ## Contributing and Support
 
-- Report reproducible bugs through [GitHub Issues](https://github.com/The-WhisprTypr/whisprtypr/issues).
+- Report reproducible bugs through [GitHub Issues](https://github.com/The-Whisprtypr/whisprtypr/issues).
 - Review existing issues and pull requests before starting overlapping work.
 - Read [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and [SECURITY.md](SECURITY.md) before opening an issue or pull request.
 
 ## License
 
-WhisprTypr is licensed under the [GNU Affero General Public License v3.0](LICENSE).
+Whisprtypr is licensed under the [GNU Affero General Public License v3.0](LICENSE).
 
 This repository includes vendored third-party code under `src-tauri/vendor/`. Those components keep their own upstream license files where provided.

@@ -1,37 +1,37 @@
 import {
-  AlertCircle,
-  Check,
-  Circle,
-  Copy,
-  Key,
-  Loader2,
-  ShieldCheck,
-  ShieldX,
-  Sparkles,
-  Trash2,
+    AlertCircle,
+    Check,
+    Circle,
+    Copy,
+    Key,
+    Loader2,
+    ShieldCheck,
+    ShieldX,
+    Sparkles,
+    Trash2,
 } from "@/components/icons";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { getErrorMessage } from "@/lib/errors";
 import {
-  activateLicense,
-  deactivateLicense,
-  getLicense,
-  getLicenseStatusMessage,
-  isLicenseActive,
-  maskLicenseKey,
-  type LicenseData,
+    activateLicense,
+    deactivateLicense,
+    getLicense,
+    getLicenseStatusMessage,
+    isLicenseActive,
+    maskLicenseKey,
+    type LicenseData,
 } from "@/lib/license-api";
 import { cn, openUrl } from "@/lib/utils";
 import { reportError } from "@/lib/voice-api";
@@ -389,13 +389,13 @@ export function LicenseView({ onClose: _onClose, onLicenseChange }: LicenseViewP
                     </div>
                     <div className="flex flex-wrap gap-2 @xl:justify-end">
                       <button
-                        onClick={() => openUrl("https://github.com/The-WhisprTypr/whisprtypr")}
+                        onClick={() => openUrl("https://github.com/The-Whisprtypr/whisprtypr")}
                         className="paper-button-primary cursor-pointer"
                       >
                         Learn more
                       </button>
                       <button
-                        onClick={() => openUrl("https://github.com/The-WhisprTypr/whisprtypr/releases/latest")}
+                        onClick={() => openUrl("https://github.com/The-Whisprtypr/whisprtypr/releases/latest")}
                         className="paper-button-outline cursor-pointer"
                       >
                         Releases

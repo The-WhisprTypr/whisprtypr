@@ -1,27 +1,27 @@
+import {
+    AlertCircle,
+    Check,
+    Clock,
+    ExternalLink,
+    Key,
+    Loader2,
+    ShieldAlert,
+    ShieldCheck,
+    Sparkles,
+} from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { activateLicense } from "@/lib/license-api";
 import { openUrl } from "@/lib/utils";
-import {
-  AlertCircle,
-  Check,
-  Clock,
-  ExternalLink,
-  Key,
-  Loader2,
-  ShieldAlert,
-  ShieldCheck,
-  Sparkles,
-} from "@/components/icons";
 import { useState } from "react";
 
 interface TrialExpiredViewProps {
@@ -86,8 +86,8 @@ export function TrialExpiredView({
         </h2>
         <p className="text-sm text-muted-foreground text-center mt-2">
           {isTrialExpired
-            ? "Your 7-day free trial has expired. Purchase a license to continue using WhisprTypr."
-            : "Your license is no longer active on this device. Activate a license to continue using WhisprTypr."}
+            ? "Your 7-day free trial has expired. Purchase a license to continue using Whisprtypr."
+            : "Your license is no longer active on this device. Activate a license to continue using Whisprtypr."}
         </p>
 
         {/* Messages */}
@@ -117,7 +117,7 @@ export function TrialExpiredView({
                       <Sparkles className="h-5 w-5 text-primary" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium">Get WhisprTypr Pro</h3>
+                      <h3 className="font-medium">Get Whisprtypr Pro</h3>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         Unlimited voice-to-cursor, lifetime updates
                       </p>
@@ -159,7 +159,7 @@ export function TrialExpiredView({
                     </Label>
                     <Input
                       id="license-key"
-                      placeholder="Paste your WhisprTypr license key"
+                      placeholder="Paste your Whisprtypr license key"
                       value={licenseKey}
                       onChange={(e) => setLicenseKey(e.target.value)}
                       className="font-mono text-sm"

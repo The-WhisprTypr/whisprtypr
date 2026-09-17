@@ -1,6 +1,6 @@
+import { Check, Cpu, Keyboard, Mic, Sparkles } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { useAppStore } from "@/store";
-import { Check, Cpu, Keyboard, Mic, Sparkles } from "@/components/icons";
 
 interface CompleteStepProps {
   onFinish: () => void;
@@ -42,7 +42,7 @@ export function CompleteStep({ onFinish }: CompleteStepProps) {
                 You're <span className="text-primary">ready</span> to dictate.
               </h2>
               <p className="text-sm text-on-dark-soft max-w-md leading-relaxed">
-                WhisprTypr is installed, configured, and waiting for your voice.
+                Whisprtypr is installed, configured, and waiting for your voice.
               </p>
             </div>
           </section>
@@ -161,7 +161,7 @@ export function CompleteStep({ onFinish }: CompleteStepProps) {
           <div className="flex items-center justify-center gap-2.5 pt-2 pb-1">
             <Logo size="sm" />
             <span className="text-xs font-semibold text-ink">
-              WhisprTypr
+              Whisprtypr
             </span>
           </div>
         </div>
@@ -174,7 +174,7 @@ export function CompleteStep({ onFinish }: CompleteStepProps) {
             onClick={onFinish}
             className="paper-button-primary cursor-pointer w-full sm:w-auto sm:min-w-[240px]"
           >
-            Start using WhisprTypr
+            Start using Whisprtypr
           </button>
         </div>
       </div>

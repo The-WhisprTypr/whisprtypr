@@ -1,24 +1,24 @@
+import { ExternalLink, Loader2, MessageSquareHeart, Star } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn, openUrl } from "@/lib/utils";
-import { ExternalLink, Loader2, MessageSquareHeart, Star } from "@/components/icons";
 import { useEffect, useState } from "react";
 
 interface FeedbackDialogProps {
@@ -40,7 +40,7 @@ const ratingLabels: Record<number, string> = {
   5: "Loving it",
 };
 
-const DISCUSSIONS_URL = "https://github.com/The-WhisprTypr/whisprtypr/discussions/new";
+const DISCUSSIONS_URL = "https://github.com/The-Whisprtypr/whisprtypr/discussions/new";
 
 export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
   const { success: toastSuccess, error: toastError } = useToast();
@@ -68,7 +68,7 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
   const buildDiscussionBody = () => {
     const selectedRating = rating > 0 ? `${"★".repeat(rating)}${"☆".repeat(5 - rating)} (${rating}/5)` : "Not provided";
     const categoryLabel = feedbackCategories.find((c) => c.value === category)?.label ?? category;
-    const versionLine = appVersion ? `**WhisprTypr version:** ${appVersion}` : "";
+    const versionLine = appVersion ? `**Whisprtypr version:** ${appVersion}` : "";
     const emailLine = email ? `**Reply email (optional):** ${email}` : "";
     const messageBody = message.trim() || "_No additional message provided._";
 
@@ -90,8 +90,8 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
     const trimmed = message.trim().split("\n")[0]?.slice(0, 80) ?? "";
     if (trimmed) return trimmed;
     return category === "ideas"
-      ? "Feature idea from WhisprTypr user"
-      : "Feedback from a WhisprTypr user";
+      ? "Feature idea from Whisprtypr user"
+      : "Feedback from a Whisprtypr user";
   };
 
   const handleSubmit = async () => {
@@ -141,7 +141,7 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
         <div className="space-y-4">
           <div className="space-y-2">
             <Label className="text-xs font-medium text-foreground/60 uppercase tracking-wider">
-              How is WhisprTypr working for you?
+              How is Whisprtypr working for you?
             </Label>
             <div className="flex items-center gap-2">
               <div

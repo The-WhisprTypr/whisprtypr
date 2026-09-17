@@ -1,25 +1,25 @@
 import {
-  AlertCircle,
-  Circle,
-  Clipboard,
-  Globe,
-  Keyboard,
-  Maximize2,
-  Monitor,
-  Power,
-  RefreshCw,
-  Sparkles,
-  Volume2,
-  Waves,
-  Zap,
+    AlertCircle,
+    Circle,
+    Clipboard,
+    Globe,
+    Keyboard,
+    Maximize2,
+    Monitor,
+    Power,
+    RefreshCw,
+    Sparkles,
+    Volume2,
+    Waves,
+    Zap,
 } from "@/components/icons";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
@@ -164,7 +164,7 @@ export function SettingsView(_props: SettingsViewProps) {
 <h1
               className="display-sm text-ink mt-1"
             >
-              Tune WhisprTypr to your <span className="text-primary">workflow</span>.
+              Tune Whisprtypr to your <span className="text-primary">workflow</span>.
             </h1>
         </div>
       </div>
@@ -194,7 +194,7 @@ export function SettingsView(_props: SettingsViewProps) {
                   {activeCount} of 5 power-ups <span className="text-primary">active</span>.
                 </h2>
                 <p className="body-sm text-on-dark-soft mt-2 max-w-xl">
-                  Configure hotkeys, transcription behavior, and how WhisprTypr shows up on your desktop.
+                  Configure hotkeys, transcription behavior, and how Whisprtypr shows up on your desktop.
                 </p>
               </div>
 
@@ -490,7 +490,7 @@ export function SettingsView(_props: SettingsViewProps) {
                 icon={<Power className="h-3.5 w-3.5" />}
                 iconClass={settings.autoStartOnBoot ? "bg-primary/10 text-primary" : ""}
                 title="Start on boot"
-                description="Launch WhisprTypr when system starts"
+                description="Launch Whisprtypr when system starts"
                 checked={settings.autoStartOnBoot}
                 onChange={async (checked) => {
                   try {
@@ -614,7 +614,7 @@ export function SettingsView(_props: SettingsViewProps) {
               </p>
               <div className="h-px w-10 my-0.5" style={{ background: "#36342e" }} />
               <p className="caption text-on-dark-muted">
-                © {new Date().getFullYear()} WhisprTypr · All rights reserved
+                © {new Date().getFullYear()} Whisprtypr · All rights reserved
               </p>
             </div>
           </section>

@@ -3,15 +3,15 @@
   "private": false,
   "version": "1.0.0",
   "description": "Open-source desktop dictation app that turns your voice into text at your cursor",
-  "author": "The WhisprTypr Team",
+  "author": "The Whisprtypr Team",
   "license": "AGPL-3.0-only",
   "homepage": "https://whisprtypr.app",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/The-WhisprTypr/whisprtypr.git"
+    "url": "git+https://github.com/The-Whisprtypr/whisprtypr.git"
   },
   "bugs": {
-    "url": "https://github.com/The-WhisprTypr/whisprtypr/issues"
+    "url": "https://github.com/The-Whisprtypr/whisprtypr/issues"
   },
   "type": "module",
   "scripts": {

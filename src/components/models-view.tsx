@@ -1,57 +1,57 @@
+import { CloudModelsTab } from "@/components/cloud-models-tab";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+    AlertCircle,
+    ArrowRight,
+    Check,
+    Circle,
+    Cpu,
+    Gauge,
+    Globe,
+    HardDrive,
+    Loader2,
+    Star,
+    Trash2,
+    X,
+    Zap,
+} from "@/components/icons";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
-  cancelModelDownload,
-  deleteModel,
-  downloadModel,
-  onDownloadProgress,
-  reportError,
+    cancelModelDownload,
+    deleteModel,
+    downloadModel,
+    onDownloadProgress,
+    reportError,
 } from "@/lib/voice-api";
 import { useAppStore, useAvailableModels, useIsInitialized } from "@/store";
 import {
-  getDefaultLanguageForModel,
-  getModelCategories,
-  getModelLanguageLabel,
-  getModelLanguageOptions,
-  isLanguageSupportedByModel,
-  type ModelBadgeCategory,
-  type WhisperModel,
+    getDefaultLanguageForModel,
+    getModelCategories,
+    getModelLanguageLabel,
+    getModelLanguageOptions,
+    isLanguageSupportedByModel,
+    LANGUAGE_NAMES,
+    type ModelBadgeCategory,
+    type WhisperModel,
 } from "@/types";
-import { LANGUAGE_NAMES } from "@/types";
-import {
-  AlertCircle,
-  ArrowRight,
-  Check,
-  Cpu,
-  Gauge,
-  Globe,
-  HardDrive,
-  Loader2,
-  Star,
-  Trash2,
-  X,
-  Zap,
-  Circle,
-} from "@/components/icons";
-import { CloudModelsTab } from "@/components/cloud-models-tab";
 import { useEffect, useMemo, useState } from "react";
 
 interface ModelsViewProps {
@@ -720,7 +720,7 @@ export function ModelsView(_props: ModelsViewProps) {
                             <p className="caption text-body-muted">
                               {isCanceling
                                 ? "Canceling download..."
-                                : "Keep WhisprTypr open while this downloads."}
+                                : "Keep Whisprtypr open while this downloads."}
                             </p>
                             <p className="caption-strong text-primary">
                               {Math.floor(downloadProgress)}%

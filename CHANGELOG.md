@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to WhisprTypr will be documented in this file.
+All notable changes to Whisprtypr will be documented in this file.
 
 This project follows the spirit of [Keep a Changelog](https://keepachangelog.com/) and uses semantic version tags when releases are published.
 

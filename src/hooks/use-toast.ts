@@ -1,6 +1,6 @@
 /**
  * Toast notification hook using Sonner (shadcn/ui)
- * Production-grade notification system for WhisprTypr
+ * Production-grade notification system for Whisprtypr
  */
 
 import { toast as sonnerToast } from "sonner";
@@ -91,3 +91,4 @@ export function useToast() {
 
 // Re-export for direct usage
 export { sonnerToast as toast };
+

@@ -35,7 +35,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const tagName = `v${{ steps.version.outputs.version }}`;
-            const releaseName = `WhisprTypr ${tagName}`;
+            const releaseName = `Whisprtypr ${tagName}`;
             const body = 'See the assets section below to download the installer for your platform.';
 
             const { data: releases } = await github.rest.repos.listReleases({

@@ -1,13 +1,13 @@
 import { FeedbackDialog } from "@/components/feedback-dialog";
 import {
-  ArrowRight,
-  BookOpen,
-  Bug,
-  Circle,
-  HelpCircle,
-  MessageSquareHeart,
-  RefreshCcw,
-  Wrench
+    ArrowRight,
+    BookOpen,
+    Bug,
+    Circle,
+    HelpCircle,
+    MessageSquareHeart,
+    RefreshCcw,
+    Wrench
 } from "@/components/icons";
 import { useState } from "react";
 
@@ -28,7 +28,7 @@ const quickFixes: HelpItem[] = [
   {
     icon: RefreshCcw,
     title: "Restart the application",
-    text: "Restart WhisprTypr to resolve most temporary glitches and stuck states.",
+    text: "Restart Whisprtypr to resolve most temporary glitches and stuck states.",
   },
   {
     icon: Wrench,
@@ -38,7 +38,7 @@ const quickFixes: HelpItem[] = [
   {
     icon: Bug,
     title: "Check microphone permissions",
-    text: "Ensure WhisprTypr has access to your microphone in system settings.",
+    text: "Ensure Whisprtypr has access to your microphone in system settings.",
   },
 ];
 
@@ -46,14 +46,14 @@ const supportLinks: SupportLink[] = [
   {
     icon: BookOpen,
     title: "Documentation",
-    text: "Read the WhisprTypr documentation and guides.",
-    url: "https://github.com/The-WhisprTypr/whisprtypr#readme",
+    text: "Read the Whisprtypr documentation and guides.",
+    url: "https://github.com/The-Whisprtypr/whisprtypr#readme",
   },
   {
     icon: Bug,
     title: "Report a bug",
     text: "Submit a bug report to help us improve.",
-    url: "https://github.com/The-WhisprTypr/whisprtypr/issues",
+    url: "https://github.com/The-Whisprtypr/whisprtypr/issues",
   },
 ];
 

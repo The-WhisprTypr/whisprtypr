@@ -1,5 +1,5 @@
 /**
- * Production-grade logging utility for WhisprTypr
+ * Production-grade logging utility for Whisprtypr
  * Provides structured logging with levels, timestamps, and context
  */
 

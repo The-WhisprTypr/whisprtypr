@@ -1,4 +1,4 @@
-// Build script for WhisprTypr.
+// Build script for Whisprtypr.
 //
 // GPU acceleration for the Qwen3-ASR model is provided by the vendored
 // `qwen3-asr` crate, which uses Candle's CUDA/Metal backends. We detect

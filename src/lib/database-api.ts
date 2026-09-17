@@ -1,5 +1,5 @@
 /**
- * Database API wrappers for WhisprTypr
+ * Database API wrappers for Whisprtypr
  * These functions provide a clean interface to interact with SQLite database via Tauri backend
  */
 
@@ -188,11 +188,11 @@ export async function dbGetAppDataDir(): Promise<string> {
 // ============================================
 
 import type {
-  AiFormattingProviderId,
-  AiFormattingStyle,
-  AppSettings,
-  ModelCapabilities,
-  WhisperModel,
+    AiFormattingProviderId,
+    AiFormattingStyle,
+    AppSettings,
+    ModelCapabilities,
+    WhisperModel,
 } from "@/types";
 import { MODEL_CAPABILITIES, WHISPER_MULTILINGUAL_LANGUAGES } from "@/types";
 

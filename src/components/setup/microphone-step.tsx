@@ -1,12 +1,12 @@
-import { cn } from "@/lib/utils";
 import {
-  AlertCircle,
-  Check,
-  Info,
-  Loader2,
-  Mic,
-  MicOff,
+    AlertCircle,
+    Check,
+    Info,
+    Loader2,
+    Mic,
+    MicOff,
 } from "@/components/icons";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 interface MicrophoneStepProps {
@@ -87,7 +87,7 @@ export function MicrophoneStep({ onNext, onBack }: MicrophoneStepProps) {
                 Allow <span className="text-primary">microphone</span> access.
               </h2>
               <p className="text-sm text-on-dark-soft max-w-md leading-relaxed">
-                WhisprTypr needs to hear you. We capture audio natively — no cloud calls.
+                Whisprtypr needs to hear you. We capture audio natively — no cloud calls.
               </p>
             </div>
           </section>
@@ -158,7 +158,7 @@ export function MicrophoneStep({ onNext, onBack }: MicrophoneStepProps) {
                 <div className="space-y-1 min-w-0">
                   <p className="text-xs font-semibold text-ink">Permission denied</p>
                   <p className="text-xs text-body-muted">
-                    The browser test failed, but don't worry — WhisprTypr uses native audio capture which may still work.
+                    The browser test failed, but don't worry — Whisprtypr uses native audio capture which may still work.
                   </p>
                 </div>
               </div>
@@ -170,7 +170,7 @@ export function MicrophoneStep({ onNext, onBack }: MicrophoneStepProps) {
                 <div className="space-y-1 min-w-0">
                   <p className="text-xs font-semibold text-ink">Native audio capture</p>
                   <p className="text-xs text-body-muted">
-                    WhisprTypr uses native audio capture. Test your mic here, or skip if the browser blocks it.
+                    Whisprtypr uses native audio capture. Test your mic here, or skip if the browser blocks it.
                   </p>
                 </div>
               </div>

@@ -1,10 +1,10 @@
+import { BookText, Trash2, Wand2 } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store";
-import { BookText, Trash2, Wand2 } from "@/components/icons";
 import { useState } from "react";
 
 interface VocabularyViewProps {
@@ -107,7 +107,7 @@ export function VocabularyView(_props: VocabularyViewProps) {
             <p className="body-sm text-body-muted mb-3 leading-relaxed">
               When you say{" "}
               <span className="font-mono text-ink">spoke phrase</span>,
-              WhisprTypr will replace it with{" "}
+              Whisprtypr will replace it with{" "}
               <span className="font-mono text-ink">written form</span>{" "}
               (case-insensitive, whole-word match). The written form is preserved
               exactly, so include the casing and punctuation you want.
@@ -141,7 +141,7 @@ export function VocabularyView(_props: VocabularyViewProps) {
                   htmlFor="vocab-written"
                   className="caption-strong text-ink-mid"
                 >
-                  WhisprTypr writes
+                  Whisprtypr writes
                 </Label>
                 <Input
                   id="vocab-written"

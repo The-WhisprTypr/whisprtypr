@@ -1,28 +1,28 @@
-import { useState } from "react";
 import {
-  AlertCircle,
-  Check,
-  Circle,
-  ExternalLink,
-  Key,
-  Loader2,
-  ShieldCheck,
-  Sparkles,
-  Trash2,
+    AlertCircle,
+    Check,
+    Circle,
+    ExternalLink,
+    Key,
+    Loader2,
+    ShieldCheck,
+    Sparkles,
+    Trash2,
 } from "@/components/icons";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 import {
-  deleteAiFormattingProvider,
-  saveAiFormattingProvider,
-  testAiFormattingConnection,
+    deleteAiFormattingProvider,
+    saveAiFormattingProvider,
+    testAiFormattingConnection,
 } from "@/lib/ai-formatting-api";
+import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store";
 import type {
-  AiFormattingProviderId,
-  AiFormattingProviderInfo,
+    AiFormattingProviderId,
+    AiFormattingProviderInfo,
 } from "@/types";
 import { AI_FORMATTING_STYLES, type AiFormattingStyle } from "@/types";
+import { useState } from "react";
 
 interface ProviderMeta {
   id: AiFormattingProviderId;
@@ -260,7 +260,7 @@ export function AiFormattingProvidersTab({ selectedStyle }: AiFormattingProvider
               </div>
             </div>
             <p className="caption text-on-dark-soft leading-relaxed">
-              Text is transmitted directly to your provider's official endpoints. WhisprTypr has no middleman servers.
+              Text is transmitted directly to your provider's official endpoints. Whisprtypr has no middleman servers.
             </p>
           </div>
         </div>

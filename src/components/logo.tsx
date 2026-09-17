@@ -20,12 +20,12 @@ export function Logo({ size = "md", showText = true, className }: LogoProps) {
     <div className={cn("flex items-center gap-2.5", className)}>
       <img
         src={whisprtyprLogo}
-        alt="WhisprTypr Logo"
+        alt="Whisprtypr Logo"
         className={cn(s.icon, "object-contain")}
       />
       {showText && (
         <span className={cn(s.text, "font-semibold tracking-tight")}>
-          WhisprTypr
+          Whisprtypr
         </span>
       )}
     </div>

@@ -1,21 +1,21 @@
+import {
+    AlertCircle,
+    Check,
+    Clock,
+    Key,
+    Loader2,
+    ShieldCheck,
+    Sparkles,
+} from "@/components/icons";
 import { useToast } from "@/hooks/use-toast";
 import {
-  activateLicense,
-  getLicense,
-  isLicenseActive,
-  startTrial,
-  type LicenseData,
+    activateLicense,
+    getLicense,
+    isLicenseActive,
+    startTrial,
+    type LicenseData,
 } from "@/lib/license-api";
 import { cn, openUrl } from "@/lib/utils";
-import {
-  AlertCircle,
-  Check,
-  Clock,
-  Key,
-  Loader2,
-  ShieldCheck,
-  Sparkles,
-} from "@/components/icons";
 import { useEffect, useState } from "react";
 
 interface LicenseStepProps {
@@ -279,7 +279,7 @@ export function LicenseStep({ onNext, onBack }: LicenseStepProps) {
                   </label>
                   <input
                     type="text"
-                    placeholder="Paste your WhisprTypr license key"
+                    placeholder="Paste your Whisprtypr license key"
                     value={licenseKey}
                     onChange={(e) => setLicenseKey(e.target.value)}
                     disabled={isActivating}

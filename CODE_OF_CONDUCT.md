@@ -2,7 +2,7 @@
 
 ## Our Pledge
 
-We want WhisprTypr to be a welcoming, respectful project for contributors and users. We pledge to make participation harassment-free for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, education, nationality, personal appearance, race, religion, sexual identity and orientation, or technology choices.
+We want Whisprtypr to be a welcoming, respectful project for contributors and users. We pledge to make participation harassment-free for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, education, nationality, personal appearance, race, religion, sexual identity and orientation, or technology choices.
 
 ## Expected Behavior
 

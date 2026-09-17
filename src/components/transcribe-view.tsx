@@ -1,18 +1,18 @@
+import {
+    AlertCircle,
+    Circle,
+    FileAudio,
+    Globe,
+    Headphones,
+    Loader2,
+    Sparkles,
+    Upload,
+} from "@/components/icons";
 import { Textarea } from "@/components/ui/textarea";
 import { addTranscription, reportError, transcribeFilesBatch, transcribeUrl } from "@/lib/voice-api";
 import { useAppStore } from "@/store";
 import { open } from "@tauri-apps/plugin-dialog";
-import {
-  AlertCircle,
-  Circle,
-  FileAudio,
-  Globe,
-  Headphones,
-  Loader2,
-  Sparkles,
-  Upload,
-} from "@/components/icons";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 interface TranscribeViewProps {
   onClose: () => void;
@@ -276,7 +276,7 @@ export function TranscribeView(_props: TranscribeViewProps) {
                   Drop in files, paste a URL. Get <span className="text-primary">words</span>.
                 </h2>
                 <p className="body-sm text-on-dark-soft mt-2 max-w-xl">
-                  Drag and drop audio files, batch-upload recordings, or paste a YouTube or direct audio link. WhisprTypr turns them into clean, copyable text.
+                  Drag and drop audio files, batch-upload recordings, or paste a YouTube or direct audio link. Whisprtypr turns them into clean, copyable text.
                 </p>
               </div>
 

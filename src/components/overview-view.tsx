@@ -1,28 +1,28 @@
+import {
+    Activity,
+    ArrowRight,
+    Circle,
+    Cpu,
+    Flame,
+    Globe,
+    Headphones,
+    History,
+    Keyboard,
+    Loader2,
+    Mic,
+    RefreshCw,
+    Share2,
+    Sparkles,
+    Timer,
+    Type,
+    Waves,
+    Zap
+} from "@/components/icons";
+import { useToast } from "@/hooks/use-toast";
 import { getLicense, type LicenseData } from "@/lib/license-api";
 import { cn } from "@/lib/utils";
 import { getTranscriptionHistory, getTranscriptionHistoryCount, type TranscriptionHistoryItem } from "@/lib/voice-api";
 import { useAppStore } from "@/store";
-import { useToast } from "@/hooks/use-toast";
-import {
-  Activity,
-  ArrowRight,
-  Circle,
-  Cpu,
-  Flame,
-  Globe,
-  Headphones,
-  History,
-  Keyboard,
-  Loader2,
-  Mic,
-  RefreshCw,
-  Share2,
-  Sparkles,
-  Timer,
-  Type,
-  Waves,
-  Zap
-} from "@/components/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface OverviewViewProps {
@@ -201,7 +201,7 @@ export function OverviewView({ onNavigate, trialDaysRemaining }: OverviewViewPro
 
   const handleShareStats = useCallback(async () => {
     const snapshot = [
-      "My WhisprTypr Weekly Stats",
+      "My Whisprtypr Weekly Stats",
       "",
       `${stats.transcriptionsThisWeek} transcriptions this week`,
       `${stats.totalWords.toLocaleString()} words spoken total`,
@@ -214,7 +214,7 @@ export function OverviewView({ onNavigate, trialDaysRemaining }: OverviewViewPro
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: "WhisprTypr Weekly Stats", text: snapshot });
+        await navigator.share({ title: "Whisprtypr Weekly Stats", text: snapshot });
       } catch (err) {
         console.warn("Share failed:", err);
       }

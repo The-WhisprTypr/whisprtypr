@@ -1,13 +1,13 @@
 /**
- * Data management utilities for WhisprTypr
+ * Data management utilities for Whisprtypr
  * Export, import, backup, and cleanup functions
  */
 
 import { invoke } from "@tauri-apps/api/core";
 import {
-  clearTranscriptionHistory,
-  getTranscriptionHistory,
-  type TranscriptionHistoryItem,
+    clearTranscriptionHistory,
+    getTranscriptionHistory,
+    type TranscriptionHistoryItem,
 } from "./voice-api";
 
 export interface ExportData {
