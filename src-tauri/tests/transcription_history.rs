@@ -20,7 +20,7 @@ fn transcription_history_add_count_and_fetch() {
     assert!(second_id > first_id);
     assert_eq!(db.get_transcription_history_count(None).unwrap(), 2);
 
-    let history = db.get_transcription_history(10, 0, None).unwrap();
+    let history = db.get_transcription_history(None, 0, 10).unwrap();
     assert_eq!(history.len(), 2);
     assert!(history.iter().any(|item| item.text == "hello world"));
     assert!(history.iter().any(|item| item.text == "rust backend test"));
@@ -39,12 +39,12 @@ fn transcription_history_search_escapes_like_wildcards() {
     db.add_transcription("snakeXcase token", "base", "en", 100)
         .unwrap();
 
-    let percent_matches = db.get_transcription_history(10, 0, Some("100%")).unwrap();
+    let percent_matches = db.get_transcription_history(Some("100%"), 0, 10).unwrap();
     assert_eq!(percent_matches.len(), 1);
     assert_eq!(percent_matches[0].text, "literal 100% match");
 
     let underscore_matches = db
-        .get_transcription_history(10, 0, Some("snake_case"))
+        .get_transcription_history(Some("snake_case"), 0, 10)
         .unwrap();
     assert_eq!(underscore_matches.len(), 1);
     assert_eq!(underscore_matches[0].text, "snake_case token");
@@ -63,7 +63,7 @@ fn transcription_history_delete_and_clear() {
     db.delete_transcription(first_id).unwrap();
     assert_eq!(db.get_transcription_history_count(None).unwrap(), 1);
     assert!(!db
-        .get_transcription_history(10, 0, None)
+        .get_transcription_history(None, 0, 10)
         .unwrap()
         .iter()
         .any(|item| item.id == first_id));
@@ -81,8 +81,8 @@ fn transcription_history_paginates() {
             .unwrap();
     }
 
-    let first_page = db.get_transcription_history(2, 0, None).unwrap();
-    let second_page = db.get_transcription_history(2, 2, None).unwrap();
+    let first_page = db.get_transcription_history(None, 0, 2).unwrap();
+    let second_page = db.get_transcription_history(None, 2, 2).unwrap();
 
     assert_eq!(first_page.len(), 2);
     assert_eq!(second_page.len(), 2);

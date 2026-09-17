@@ -142,7 +142,7 @@ fn e2e_dictation_post_processing_history_search_and_cleanup() {
     assert!(processed.contains("createUser()"));
 
     let code_matches = db
-        .get_transcription_history(10, 0, Some("@main.rs"))
+        .get_transcription_history(Some("@main.rs"), 0, 10)
         .unwrap();
     assert_eq!(code_matches.len(), 1);
     assert_eq!(code_matches[0].id, first_id);
