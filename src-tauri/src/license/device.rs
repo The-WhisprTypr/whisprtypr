@@ -1,13 +1,10 @@
 use sha2::{Digest, Sha256};
 use std::path::PathBuf;
-use std::sync::Mutex;
-use std::time::Duration;
 
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
-use crate::license::models::{CachedLicense, CACHE_VERSION};
-
+use crate::license::models::CachedLicense;
 #[cfg(target_os = "windows")]
 use crate::license::models::CREATE_NO_WINDOW;
 use crate::security;

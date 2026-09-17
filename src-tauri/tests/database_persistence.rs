@@ -73,7 +73,7 @@ fn database_state_survives_reopen() {
 
     assert_eq!(reopened.get_transcription_history_count(None).unwrap(), 1);
     assert_eq!(
-        reopened.get_transcription_history(10, 0, None).unwrap()[0].text,
+        reopened.get_transcription_history(None, 0, 10).unwrap()[0].text,
         "persist me"
     );
 

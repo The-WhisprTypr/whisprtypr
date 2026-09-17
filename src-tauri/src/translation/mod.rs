@@ -3,7 +3,6 @@ pub mod types;
 use crate::translation::types::TranslationRequest;
 use crate::translation::types::TranslationResponse;
 use reqwest::Client;
-use serde::Serialize;
 
 const MYMEMORY_API_URL: &str = "https://api.mymemory.translated.net/get";
 

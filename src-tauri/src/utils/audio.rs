@@ -1,10 +1,7 @@
-use std::path::Path;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex};
-
 use crate::utils::AUDIO_TARGET_SAMPLE_RATE;
 use crate::utils::MAX_FILE_AUDIO_SAMPLES;
 use crate::utils::MAX_FILE_TRANSCRIPTION_SECONDS;
+use std::path::Path;
 
 pub fn read_audio_file(file_path: &Path) -> Result<Vec<f32>, String> {
     use std::fs::File;

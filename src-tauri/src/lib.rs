@@ -1,7 +1,7 @@
 #![recursion_limit = "512"]
 
 pub mod ai_formatting;
-mod audio;
+pub mod audio;
 pub mod cloud_transcription;
 pub mod commands;
 pub mod database;

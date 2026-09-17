@@ -75,16 +75,3 @@ pub fn resample(samples: &[f32], source_rate: u32, target_rate: u32) -> Vec<f32>
 
     output
 }
-
-pub fn is_probable_loopback_input(device_name: &str) -> bool {
-    let name = device_name.to_ascii_lowercase();
-    [
-        "stereo mix",
-        "what u hear",
-        "wave out",
-        "loopback",
-        "monitor of",
-    ]
-    .iter()
-    .any(|pattern| name.contains(pattern))
-}

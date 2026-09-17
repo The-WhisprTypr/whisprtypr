@@ -1,6 +1,6 @@
 pub mod keyboard;
 
-use enigo::{Direction, Enigo, Key, Keyboard, Settings};
+use enigo::{Enigo, Keyboard, Settings};
 #[cfg(target_os = "windows")]
 use std::time::Duration;
 

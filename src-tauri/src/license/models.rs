@@ -1,6 +1,5 @@
 use log::warn;
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 
 /// Polar.sh Customer Portal API endpoint (no auth required for client apps)
 pub const POLAR_API_BASE: &str = "https://api.polar.sh/v1/customer-portal/license-keys";

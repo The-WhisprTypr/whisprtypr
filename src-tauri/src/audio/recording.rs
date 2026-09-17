@@ -1,4 +1,4 @@
-use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
+use cpal::traits::{DeviceTrait, StreamTrait};
 use cpal::{Sample, SampleFormat, SupportedStreamConfig};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc;
@@ -10,8 +10,6 @@ use crate::audio::devices;
 use crate::audio::processing;
 use crate::audio::AudioCaptureSource;
 use crate::audio::RecorderCommand;
-use crate::audio::MAX_RECORDING_SAMPLES;
-use crate::audio::TARGET_SAMPLE_RATE;
 
 pub fn run_recording_thread(
     cmd_rx: mpsc::Receiver<RecorderCommand>,

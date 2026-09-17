@@ -25,8 +25,6 @@ pub const MAX_FILE_AUDIO_SAMPLES: usize =
     AUDIO_TARGET_SAMPLE_RATE as usize * MAX_FILE_TRANSCRIPTION_SECONDS;
 
 pub mod text {
-    use std::path::Path;
-
     pub fn sanitize_text(text: &str, max_len: usize) -> Result<String, String> {
         if text.len() > max_len {
             return Err(format!("Text exceeds maximum length of {} bytes", max_len));

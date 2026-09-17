@@ -9,9 +9,6 @@ pub mod processing;
 pub mod recording;
 pub mod wav;
 
-pub use devices::{is_probable_loopback_input, select_input_device, select_output_device};
-pub use recording::run_recording_thread;
-pub use recording::CaptureDeviceKind;
 pub use wav::save_wav;
 
 const TARGET_SAMPLE_RATE: u32 = 16_000;

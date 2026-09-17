@@ -1,14 +1,13 @@
 use log::{debug, error, info, warn};
 use reqwest::Client;
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 use std::time::Duration;
 
 use crate::license::cache::{clear_cache, load_cache, store_cache};
-use crate::license::device::{get_device_conditions, get_device_label, get_device_meta};
+use crate::license::device::{get_device_conditions, get_device_meta};
 use crate::license::models::{
     ActivateRequest, ActivateResponse, DeactivateRequest, LicenseInfo, LicenseStatus,
-    LicenseValidationOutcome, PolarActivation, PolarCustomer, PolarError, PolarLicenseKey,
-    ValidateRequest, ValidateResponse, CACHE_VERSION, OFFLINE_GRACE_HOURS,
+    LicenseValidationOutcome, PolarError, ValidateResponse, CACHE_VERSION,
     ONLINE_VALIDATION_MIN_INTERVAL_HOURS, POLAR_API_BASE, POLAR_ORG_ID, REQUEST_TIMEOUT_SECS,
 };
 use crate::security;

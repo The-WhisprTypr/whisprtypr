@@ -24,8 +24,8 @@ use crate::providers::cloud::CloudProviderRegistry;
 
 /// Create and populate a `CloudProviderRegistry` with all built-in providers.
 pub fn default_cloud_providers() -> CloudProviderRegistry {
-    let mut registry = CloudProviderRegistry::new();
-    for id in crate::providers::CLOUD_PROVIDER_IDS {
+    let registry = CloudProviderRegistry::new();
+    for _id in crate::providers::CLOUD_PROVIDER_IDS {
         // TODO: register concrete provider implementations
         // Example:
         // match id {
@@ -40,8 +40,8 @@ pub fn default_cloud_providers() -> CloudProviderRegistry {
 
 /// Create and populate an `AiFormattingProviderRegistry` with all built-in providers.
 pub fn default_ai_formatting_providers() -> AiFormattingProviderRegistry {
-    let mut registry = AiFormattingProviderRegistry::new();
-    for id in crate::providers::AI_FORMATTING_PROVIDER_IDS {
+    let registry = AiFormattingProviderRegistry::new();
+    for _id in crate::providers::AI_FORMATTING_PROVIDER_IDS {
         // TODO: register concrete provider implementations
         // (same pattern as cloud providers)
     }
