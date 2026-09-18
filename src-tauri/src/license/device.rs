@@ -107,8 +107,8 @@ fn compute_device_id() -> String {
                 }
             }
         }
-        if let Some(id) = machine_id {
-            hasher.update(&id);
+        if let Some(ref id) = machine_id {
+            hasher.update(id);
         }
 
         // Secondary: CPU info for additional entropy
