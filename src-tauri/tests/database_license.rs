@@ -33,6 +33,7 @@ fn save_license_persists_active_license_data() {
         last_validated_at: Some("2026-04-19T00:00:00+00:00".to_string()),
         trial_started_at: None,
         trial_integrity_hash: None,
+        trial_salt: None,
         usage: 3,
         validations: 4,
     };
@@ -89,6 +90,7 @@ fn clear_license_preserves_trial_history_and_marks_expired() {
         last_validated_at: Some("2026-04-19T00:00:00+00:00".to_string()),
         trial_started_at: Some(trial_started_at.clone()),
         trial_integrity_hash: Some(trial_hash.clone()),
+        trial_salt: None,
         usage: 5,
         validations: 6,
     };

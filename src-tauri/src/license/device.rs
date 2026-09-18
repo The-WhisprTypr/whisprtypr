@@ -63,6 +63,11 @@ fn compute_device_id() -> String {
     // Platform-specific hardware identifiers
     #[cfg(target_os = "macos")]
     {
+        fn command_output_hidden(program: &str, args: &[&str]) -> std::io::Result<std::process::Output> {
+            let mut command = std::process::Command::new(program);
+            command.args(args).output()
+        }
+
         if let Ok(output) = command_output_hidden("ioreg", &["-rd1", "-c", "IOPlatformExpertDevice"]) {
             let output_str = String::from_utf8_lossy(&output.stdout);
             if let Some(line) = output_str.lines().find(|l| l.contains("IOPlatformUUID")) {
@@ -80,6 +85,12 @@ fn compute_device_id() -> String {
 
     #[cfg(target_os = "windows")]
     {
+        fn command_output_hidden(program: &str, args: &[&str]) -> std::io::Result<std::process::Output> {
+            let mut command = std::process::Command::new(program);
+            command.args(args).creation_flags(CREATE_NO_WINDOW);
+            command.output()
+        }
+
         // System UUID (motherboard)
         if let Ok(output) = command_output_hidden("wmic", &["csproduct", "get", "UUID"]) {
             hasher.update(&output.stdout);
@@ -151,19 +162,6 @@ fn compute_device_id() -> String {
 
     let hash = hasher.finalize();
     format!("WVT-{}", hex::encode(&hash[..16]).to_uppercase())
-}
-
-#[cfg(target_os = "windows")]
-fn command_output_hidden(program: &str, args: &[&str]) -> std::io::Result<std::process::Output> {
-    let mut command = std::process::Command::new(program);
-    command.args(args).creation_flags(CREATE_NO_WINDOW);
-    command.output()
-}
-
-#[cfg(not(target_os = "windows"))]
-fn command_output_hidden(program: &str, args: &[&str]) -> std::io::Result<std::process::Output> {
-    let mut command = std::process::Command::new(program);
-    command.args(args).output()
 }
 
 pub fn get_device_label() -> String {
