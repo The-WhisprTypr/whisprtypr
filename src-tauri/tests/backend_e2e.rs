@@ -6,7 +6,8 @@ use whisprtypr_lib::downloader::ModelDownloader;
 use whisprtypr_lib::license::{clear_cache, LicenseManager, LicenseStatus};
 use whisprtypr_lib::post_process::PostProcessor;
 use whisprtypr_lib::{
-    calculate_trial_integrity_hash, db_license_allows_usage, has_active_trial_core,
+    calculate_trial_integrity_hash, db_license_allows_usage, generate_trial_salt,
+    has_active_trial_core,
 };
 
 fn test_database() -> (tempfile::TempDir, Database) {
@@ -35,10 +36,12 @@ fn can_use_backend(db: &Database) -> (&'static str, bool) {
 
 fn trial_license(started_at: chrono::DateTime<Utc>) -> LicenseData {
     let started_at = started_at.to_rfc3339();
+    let trial_salt = generate_trial_salt();
     LicenseData {
         status: "trial".to_string(),
-        trial_integrity_hash: Some(calculate_trial_integrity_hash(&started_at)),
+        trial_integrity_hash: Some(calculate_trial_integrity_hash(&started_at, &trial_salt)),
         trial_started_at: Some(started_at),
+        trial_salt: Some(trial_salt),
         ..LicenseData::default()
     }
 }
@@ -204,9 +207,10 @@ async fn e2e_db_backed_license_recovers_after_cache_loss() {
         expires_at: None,
         is_activated: true,
         last_validated_at: Some(Utc::now().to_rfc3339()),
-        trial_started_at: None,
-        trial_integrity_hash: None,
-        usage: 1,
+    trial_started_at: None,
+    trial_integrity_hash: None,
+    trial_salt: None,
+    usage: 1,
         validations: 1,
     })
     .unwrap();
@@ -264,9 +268,10 @@ async fn e2e_db_backed_license_recovers_after_cache_loss() {
         expires_at: validated.expires_at.clone(),
         is_activated: true,
         last_validated_at: Some(Utc::now().to_rfc3339()),
-        trial_started_at: None,
-        trial_integrity_hash: None,
-        usage: validated.usage,
+    trial_started_at: None,
+    trial_integrity_hash: None,
+    trial_salt: None,
+    usage: validated.usage,
         validations: validated.validations,
     })
     .unwrap();
@@ -373,8 +378,9 @@ async fn e2e_trial_to_license_activation_validation_and_deactivation() {
         is_activated: true,
         last_validated_at: Some(Utc::now().to_rfc3339()),
         trial_started_at: db.get_license().unwrap().trial_started_at,
-        trial_integrity_hash: db.get_license().unwrap().trial_integrity_hash,
-        usage: activated.usage,
+    trial_integrity_hash: db.get_license().unwrap().trial_integrity_hash,
+    trial_salt: db.get_license().unwrap().trial_salt,
+    usage: activated.usage,
         validations: activated.validations,
     })
     .unwrap();
@@ -398,8 +404,9 @@ async fn e2e_trial_to_license_activation_validation_and_deactivation() {
         is_activated: true,
         last_validated_at: Some(Utc::now().to_rfc3339()),
         trial_started_at: db.get_license().unwrap().trial_started_at,
-        trial_integrity_hash: db.get_license().unwrap().trial_integrity_hash,
-        usage: validated.usage,
+    trial_integrity_hash: db.get_license().unwrap().trial_integrity_hash,
+    trial_salt: db.get_license().unwrap().trial_salt,
+    usage: validated.usage,
         validations: validated.validations,
     })
     .unwrap();

@@ -1,14 +1,16 @@
 use chrono::{Duration, Utc};
 use whisprtypr_lib::database::LicenseData;
 use whisprtypr_lib::{
-    calculate_trial_integrity_hash, db_license_allows_usage_core, has_active_trial_core,
+    calculate_trial_integrity_hash, db_license_allows_usage_core, generate_trial_salt,
+    has_active_trial_core,
 };
 
 fn create_trial_license(started_at_offset_days: i64) -> LicenseData {
     let now = Utc::now();
     let started_at = now + Duration::days(started_at_offset_days);
     let started_at_str = started_at.to_rfc3339();
-    let hash = calculate_trial_integrity_hash(&started_at_str);
+    let trial_salt = generate_trial_salt();
+    let hash = calculate_trial_integrity_hash(&started_at_str, &trial_salt);
 
     LicenseData {
         license_key: None,
@@ -21,6 +23,7 @@ fn create_trial_license(started_at_offset_days: i64) -> LicenseData {
         last_validated_at: None,
         trial_started_at: Some(started_at_str),
         trial_integrity_hash: Some(hash),
+        trial_salt: Some(trial_salt),
         usage: 0,
         validations: 0,
     }
@@ -56,9 +59,11 @@ fn active_trial_allows_until_just_before_day_7() {
     let now = Utc::now();
     let started_at = now - Duration::days(7) + Duration::seconds(1);
     let started_at_str = started_at.to_rfc3339();
+    let trial_salt = generate_trial_salt();
     let license = LicenseData {
-        trial_integrity_hash: Some(calculate_trial_integrity_hash(&started_at_str)),
+        trial_integrity_hash: Some(calculate_trial_integrity_hash(&started_at_str, &trial_salt)),
         trial_started_at: Some(started_at_str),
+        trial_salt: Some(trial_salt),
         status: "trial".to_string(),
         ..LicenseData::default()
     };
@@ -71,9 +76,11 @@ fn active_trial_expires_at_exact_day_7_boundary() {
     let now = Utc::now();
     let started_at = now - Duration::days(7);
     let started_at_str = started_at.to_rfc3339();
+    let trial_salt = generate_trial_salt();
     let license = LicenseData {
-        trial_integrity_hash: Some(calculate_trial_integrity_hash(&started_at_str)),
+        trial_integrity_hash: Some(calculate_trial_integrity_hash(&started_at_str, &trial_salt)),
         trial_started_at: Some(started_at_str),
+        trial_salt: Some(trial_salt),
         status: "trial".to_string(),
         ..LicenseData::default()
     };
@@ -84,8 +91,9 @@ fn active_trial_expires_at_exact_day_7_boundary() {
 #[test]
 fn trial_rejects_invalid_start_timestamp() {
     let license = LicenseData {
-        trial_integrity_hash: Some(calculate_trial_integrity_hash("not-a-date")),
+        trial_integrity_hash: Some(calculate_trial_integrity_hash("not-a-date", "test-salt")),
         trial_started_at: Some("not-a-date".to_string()),
+        trial_salt: Some("test-salt".to_string()),
         status: "trial".to_string(),
         ..LicenseData::default()
     };
@@ -142,7 +150,7 @@ fn create_active_license(expired: bool, future_validation: bool) -> LicenseData 
     let validation = if future_validation {
         now + Duration::minutes(10)
     } else {
-        now - Duration::hours(24) // Verified 24 hours ago
+        now - Duration::hours(23) // Verified 23 hours ago (within 24h grace window)
     };
 
     LicenseData {
@@ -156,6 +164,7 @@ fn create_active_license(expired: bool, future_validation: bool) -> LicenseData 
         last_validated_at: Some(validation.to_rfc3339()),
         trial_started_at: None,
         trial_integrity_hash: None,
+        trial_salt: None,
         usage: 0,
         validations: 1,
     }
