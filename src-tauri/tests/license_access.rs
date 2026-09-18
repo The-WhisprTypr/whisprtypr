@@ -60,7 +60,7 @@ fn db_license_rejects_missing_stale_or_future_validation_time() {
 
     let mut stale_validation = active_license();
     stale_validation.last_validated_at =
-        Some((chrono::Utc::now() - chrono::Duration::hours(168)).to_rfc3339());
+        Some((chrono::Utc::now() - chrono::Duration::hours(25)).to_rfc3339());
     assert!(!db_license_allows_usage(&stale_validation));
 
     let mut future_validation = active_license();

@@ -187,8 +187,8 @@ fn db_license_core_rejects_stale_validation() {
     let mut license = create_active_license(false, false);
     let now = Utc::now();
 
-    // Set validation to 8 days ago (> 168 hours)
-    license.last_validated_at = Some((now - Duration::days(8)).to_rfc3339());
+    // Set validation to 25 hours ago (> 24 hours)
+    license.last_validated_at = Some((now - Duration::hours(25)).to_rfc3339());
     assert!(!db_license_allows_usage_core(&license, now));
 }
 
@@ -197,7 +197,7 @@ fn db_license_core_allows_until_just_before_grace_boundary() {
     let now = Utc::now();
     let mut license = create_active_license(false, false);
     license.last_validated_at =
-        Some((now - Duration::hours(168) + Duration::seconds(1)).to_rfc3339());
+        Some((now - Duration::hours(24) + Duration::seconds(1)).to_rfc3339());
 
     assert!(db_license_allows_usage_core(&license, now));
 }

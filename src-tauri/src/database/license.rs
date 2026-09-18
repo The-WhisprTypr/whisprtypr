@@ -7,7 +7,7 @@ pub fn get_license(db: &Database) -> Result<LicenseData> {
     conn.query_row(
         "SELECT license_key, activation_id, status, customer_email, customer_name, 
                     expires_at, is_activated, last_validated_at, trial_started_at,
-                    trial_integrity_hash, usage, validations
+                    trial_integrity_hash, trial_salt, usage, validations
              FROM license WHERE id = 1",
         [],
         |row| {
@@ -22,8 +22,9 @@ pub fn get_license(db: &Database) -> Result<LicenseData> {
                 last_validated_at: row.get(7)?,
                 trial_started_at: row.get(8)?,
                 trial_integrity_hash: row.get(9)?,
-                usage: row.get(10)?,
-                validations: row.get(11)?,
+                trial_salt: row.get(10)?,
+                usage: row.get(11)?,
+                validations: row.get(12)?,
             })
         },
     )
@@ -43,8 +44,9 @@ pub fn save_license(db: &Database, license: &LicenseData) -> Result<()> {
                 last_validated_at = ?8,
                 trial_started_at = ?9,
                 trial_integrity_hash = ?10,
-                usage = ?11,
-                validations = ?12,
+                trial_salt = ?11,
+                usage = ?12,
+                validations = ?13,
                 updated_at = CURRENT_TIMESTAMP
              WHERE id = 1",
         rusqlite::params![
@@ -58,6 +60,7 @@ pub fn save_license(db: &Database, license: &LicenseData) -> Result<()> {
             license.last_validated_at,
             license.trial_started_at,
             license.trial_integrity_hash,
+            license.trial_salt,
             license.usage,
             license.validations,
         ],

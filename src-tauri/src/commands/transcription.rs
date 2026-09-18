@@ -482,6 +482,9 @@ pub async fn transcribe_url(
     }
 
     let safe_url = sanitize_url(&url).map_err(CommandError::Transcription)?;
+    crate::utils::validate_url_host(&safe_url)
+        .await
+        .map_err(CommandError::Transcription)?;
     let settings = db.get_settings().map_err(CommandError::Database)?;
 
     if let Some((provider, model)) =

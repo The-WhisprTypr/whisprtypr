@@ -150,6 +150,7 @@ pub async fn activate_license(
         last_validated_at: Some(chrono::Utc::now().to_rfc3339()),
         trial_started_at: None,
         trial_integrity_hash: None,
+        trial_salt: None,
         usage: license_info.usage,
         validations: license_info.validations,
     };
@@ -197,6 +198,7 @@ pub async fn validate_license(
         last_validated_at: license_info.last_validated_at.clone(),
         trial_started_at: None,
         trial_integrity_hash: None,
+        trial_salt: None,
         usage: license_info.usage,
         validations: license_info.validations,
     };
@@ -283,7 +285,17 @@ pub fn start_trial(db: State<DbState>) -> CommandResult<LicenseResponse> {
 
     if license.trial_started_at.is_some() {
         if let Some(ref trial_started) = license.trial_started_at {
-            let expected_hash = crate::calculate_trial_integrity_hash(trial_started);
+            let Some(ref trial_salt) = license.trial_salt else {
+                log::warn!("Trial salt missing, treating as invalid");
+                license.status = "trial_expired".to_string();
+                db.0.save_license(&license)
+                    .map_err(CommandError::Database)?;
+                let _ = clear_cache();
+                return Err(CommandError::License(
+                    "Trial state is invalid. Please activate a license.".to_string(),
+                ));
+            };
+            let expected_hash = crate::calculate_trial_integrity_hash(trial_started, trial_salt);
             if license.trial_integrity_hash.as_deref() != Some(expected_hash.as_str()) {
                 log::warn!("Trial integrity check failed during start_trial");
                 license.status = "trial_expired".to_string();
@@ -326,9 +338,11 @@ pub fn start_trial(db: State<DbState>) -> CommandResult<LicenseResponse> {
     let _ = clear_cache();
 
     let trial_started_at = chrono::Utc::now().to_rfc3339();
+    let trial_salt = crate::generate_trial_salt();
     license.status = "trial".to_string();
     license.trial_started_at = Some(trial_started_at.clone());
-    license.trial_integrity_hash = Some(crate::calculate_trial_integrity_hash(&trial_started_at));
+    license.trial_salt = Some(trial_salt.clone());
+    license.trial_integrity_hash = Some(crate::calculate_trial_integrity_hash(&trial_started_at, &trial_salt));
     license.is_activated = false;
 
     db.0.save_license(&license)
@@ -381,7 +395,19 @@ pub async fn get_trial_status(
     }
 
     if let Some(trial_started) = &license.trial_started_at {
-        let expected_hash = crate::calculate_trial_integrity_hash(trial_started);
+        let Some(ref trial_salt) = license.trial_salt else {
+            log::warn!("Trial salt missing in get_trial_status");
+            let mut expired = license.clone();
+            expired.status = "trial_expired".to_string();
+            let _ = db.save_license(&expired);
+            return Ok(serde_json::json!({
+                "isInTrial": false,
+                "daysRemaining": 0,
+                "trialExpired": true,
+                "hasLicense": false
+            }));
+        };
+        let expected_hash = crate::calculate_trial_integrity_hash(trial_started, trial_salt);
         if license.trial_integrity_hash.as_deref() != Some(expected_hash.as_str()) {
             log::warn!("Trial integrity check failed in get_trial_status");
             let mut expired = license.clone();
@@ -458,7 +484,18 @@ pub async fn can_use_app(
     }
 
     if let Some(trial_started) = &license.trial_started_at {
-        let expected_hash = crate::calculate_trial_integrity_hash(trial_started);
+        let Some(ref trial_salt) = license.trial_salt else {
+            log::warn!("Trial salt missing in can_use_app");
+            let mut expired = license.clone();
+            expired.status = "trial_expired".to_string();
+            let _ = db.save_license(&expired);
+            return Ok(serde_json::json!({
+                "canUse": false,
+                "reason": "trial_expired",
+                "daysRemaining": 0
+            }));
+        };
+        let expected_hash = crate::calculate_trial_integrity_hash(trial_started, trial_salt);
         if license.trial_integrity_hash.as_deref() != Some(expected_hash.as_str()) {
             log::warn!("Trial integrity check failed in can_use_app");
             let mut expired = license.clone();

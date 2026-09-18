@@ -103,6 +103,7 @@ pub struct LicenseData {
     pub last_validated_at: Option<String>,
     pub trial_started_at: Option<String>,
     pub trial_integrity_hash: Option<String>,
+    pub trial_salt: Option<String>,
     pub usage: i32,
     pub validations: i32,
 }
@@ -120,6 +121,7 @@ impl Default for LicenseData {
             last_validated_at: None,
             trial_started_at: None,
             trial_integrity_hash: None,
+            trial_salt: None,
             usage: 0,
             validations: 0,
         }

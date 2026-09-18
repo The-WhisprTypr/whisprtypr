@@ -46,7 +46,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src 'self' https://huggingface.co https://*.huggingface.co https://github.com https://*.github.com https://api.github.com https://*.sentry.io https://o1.ingest.sentry.io",
+      "csp": "default-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src 'self' https://huggingface.co https://cdn.huggingface.co https://cdn-lfs.huggingface.co https://github.com https://api.github.com https://sentry.io https://o1.ingest.sentry.io",
       "dangerousDisableAssetCspModification": false,
       "freezePrototype": true
     }

@@ -1,6 +1,5 @@
 pub mod crypto;
 pub use crypto::decrypt_data;
-pub use crypto::derive_encryption_key;
 pub use crypto::encrypt_data;
 
 pub fn mask_license_key(key: &str) -> String {
@@ -16,43 +15,41 @@ mod tests {
     use super::mask_license_key;
 
     #[test]
-    fn test_derive_encryption_key_stability() {
-        let device_id = "test-device-123";
-        let key1 = crypto::derive_encryption_key(device_id);
-        let key2 = crypto::derive_encryption_key(device_id);
-        assert_eq!(key1, key2);
-        assert_eq!(key1.len(), 32);
-    }
-
-    #[test]
     fn test_encryption_decryption_roundtrip() {
         let device_id = "test-device-456";
-        let key = crypto::derive_encryption_key(device_id);
         let original_data = b"Hello, Whisprtypr Secure Data!";
 
-        let encrypted = crypto::encrypt_data(original_data, &key).unwrap();
+        let encrypted = crypto::encrypt_data(original_data, device_id).unwrap();
         assert_ne!(encrypted, original_data);
         assert!(encrypted.len() > original_data.len());
 
-        let decrypted = crypto::decrypt_data(&encrypted, &key).unwrap();
+        let decrypted = crypto::decrypt_data(&encrypted, device_id).unwrap();
         assert_eq!(decrypted, original_data);
     }
 
     #[test]
-    fn test_decryption_with_wrong_key() {
-        let key1 = crypto::derive_encryption_key("device-1");
-        let key2 = crypto::derive_encryption_key("device-2");
-        let data = b"Secret message";
+    fn test_encryption_uses_random_salt() {
+        let device_id = "test-device-456";
+        let original_data = b"Hello, Whisprtypr Secure Data!";
 
-        let encrypted = crypto::encrypt_data(data, &key1).unwrap();
-        let result = crypto::decrypt_data(&encrypted, &key2);
+        let first = crypto::encrypt_data(original_data, device_id).unwrap();
+        let second = crypto::encrypt_data(original_data, device_id).unwrap();
+        assert_ne!(first, second);
+        assert_eq!(crypto::decrypt_data(&first, device_id).unwrap(), original_data);
+        assert_eq!(crypto::decrypt_data(&second, device_id).unwrap(), original_data);
+    }
+
+    #[test]
+    fn test_decryption_with_wrong_device_id() {
+        let data = b"Secret message";
+        let encrypted = crypto::encrypt_data(data, "device-1").unwrap();
+        let result = crypto::decrypt_data(&encrypted, "device-2");
         assert!(result.is_err());
     }
 
     #[test]
     fn test_decryption_invalid_data() {
-        let key = crypto::derive_encryption_key("test");
-        let result = crypto::decrypt_data(b"too-short", &key);
+        let result = crypto::decrypt_data(b"too-short", "test");
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), "Invalid encrypted data: too short");
     }

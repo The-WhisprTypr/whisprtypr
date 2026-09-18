@@ -213,6 +213,7 @@ impl Database {
                 last_validated_at TEXT,
                 trial_started_at TEXT,
                 trial_integrity_hash TEXT,
+                trial_salt TEXT,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP,
                 updated_at TEXT DEFAULT CURRENT_TIMESTAMP
             )",
@@ -225,6 +226,7 @@ impl Database {
             "ALTER TABLE license ADD COLUMN trial_integrity_hash TEXT",
             [],
         );
+        let _ = conn.execute("ALTER TABLE license ADD COLUMN trial_salt TEXT", []);
 
         // Migration: add usage and validations columns if they don't exist
         let _ = conn.execute(

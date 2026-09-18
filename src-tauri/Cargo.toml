@@ -86,6 +86,7 @@ hex = "0.4"
 # Encryption for secure data storage
 aes-gcm = "0.10"
 getrandom = { version = "0.2", features = ["std"] }
+argon2 = "0.5"
 
 # Whisper speech-to-text
 whisper-rs = "0.16"

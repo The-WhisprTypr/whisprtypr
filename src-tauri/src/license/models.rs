@@ -8,7 +8,7 @@ pub const POLAR_API_BASE: &str = "https://api.polar.sh/v1/customer-portal/licens
 pub const POLAR_ORG_ID: &str = "51b31898-f34d-4f72-a175-26c8f6c8d828";
 
 /// Offline grace period in hours - license works offline for this duration
-pub const OFFLINE_GRACE_HOURS: i64 = 168; // 7 days
+pub const OFFLINE_GRACE_HOURS: i64 = 24; // 24 hours
 
 /// Minimum interval between online license re-validations.
 ///

@@ -1,39 +1,28 @@
 use whisprtypr_lib::security::{
-    decrypt_data, derive_encryption_key, encrypt_data, mask_license_key,
+    decrypt_data, encrypt_data, mask_license_key,
 };
 
 #[test]
-fn encryption_key_is_stable_and_256_bit() {
-    let key = derive_encryption_key("device-a");
-
-    assert_eq!(key, derive_encryption_key("device-a"));
-    assert_ne!(key, derive_encryption_key("device-b"));
-    assert_eq!(key.len(), 32);
-}
-
-#[test]
-fn encrypted_payload_round_trips_and_uses_random_nonce() {
-    let key = derive_encryption_key("device-a");
+fn encrypted_payload_round_trips_and_uses_random_salt() {
+    let device_id = "device-a";
     let plaintext = b"secret license payload";
 
-    let first = encrypt_data(plaintext, &key).unwrap();
-    let second = encrypt_data(plaintext, &key).unwrap();
+    let first = encrypt_data(plaintext, device_id).unwrap();
+    let second = encrypt_data(plaintext, device_id).unwrap();
 
     assert_ne!(first, plaintext);
     assert_ne!(first, second);
-    assert_eq!(decrypt_data(&first, &key).unwrap(), plaintext);
-    assert_eq!(decrypt_data(&second, &key).unwrap(), plaintext);
+    assert_eq!(decrypt_data(&first, device_id).unwrap(), plaintext);
+    assert_eq!(decrypt_data(&second, device_id).unwrap(), plaintext);
 }
 
 #[test]
-fn decrypt_rejects_wrong_key_and_too_short_payloads() {
-    let key = derive_encryption_key("device-a");
-    let wrong_key = derive_encryption_key("device-b");
-    let encrypted = encrypt_data(b"secret", &key).unwrap();
+fn decrypt_rejects_wrong_device_id_and_too_short_payloads() {
+    let encrypted = encrypt_data(b"secret", "device-a").unwrap();
 
-    assert!(decrypt_data(&encrypted, &wrong_key).is_err());
+    assert!(decrypt_data(&encrypted, "device-b").is_err());
     assert_eq!(
-        decrypt_data(b"short", &key).unwrap_err(),
+        decrypt_data(b"short", "device-a").unwrap_err(),
         "Invalid encrypted data: too short"
     );
 }

@@ -23,7 +23,7 @@ use audio::AudioRecorder;
 use database::Database;
 use downloader::ModelDownloader;
 use error_reporting::ErrorReporter;
-use license::{get_device_id, LicenseManager, LicenseStatus};
+use license::{get_device_id, LicenseManager, LicenseStatus, models::OFFLINE_GRACE_HOURS};
 use log::{debug, info, warn};
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
@@ -89,6 +89,7 @@ pub struct TextInjectorState(pub Arc<Mutex<text_inject::TextInjector>>);
 // Rate limiter: 100 requests per minute per action
 pub struct RecordingRateLimiter(pub Arc<RateLimiter>);
 pub struct TranscriptionRateLimiter(pub Arc<RateLimiter>);
+pub struct TextInjectionRateLimiter(pub Arc<RateLimiter>);
 
 // Error type for commands
 #[derive(Debug, thiserror::Error)]
@@ -229,7 +230,11 @@ pub fn has_active_trial_core(
         return false;
     };
 
-    let expected_hash = calculate_trial_integrity_hash(trial_started);
+    let Some(trial_salt) = &license.trial_salt else {
+        return false;
+    };
+
+    let expected_hash = calculate_trial_integrity_hash(trial_started, trial_salt);
     if license.trial_integrity_hash.as_deref() != Some(expected_hash.as_str()) {
         warn!("Trial integrity check failed");
         return false;
@@ -291,15 +296,23 @@ pub fn db_license_allows_usage_core(
         return false;
     }
 
-    (now - last_validated).num_hours() < 168
+    (now - last_validated).num_hours() < OFFLINE_GRACE_HOURS
 }
 
-pub fn calculate_trial_integrity_hash(trial_started_at: &str) -> String {
+pub fn calculate_trial_integrity_hash(trial_started_at: &str, trial_salt: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(trial_started_at.as_bytes());
     hasher.update(get_device_id().as_bytes());
-    hasher.update(b"whisprtypr-trial-integrity-v1");
+    hasher.update(trial_salt.as_bytes());
+    hasher.update(b"whisprtypr-trial-integrity-v2");
     hex::encode(hasher.finalize())
+}
+
+pub fn generate_trial_salt() -> String {
+    use getrandom::getrandom;
+    let mut bytes = [0u8; 32];
+    getrandom(&mut bytes).expect("Failed to generate trial salt");
+    hex::encode(bytes)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -390,6 +403,7 @@ pub fn run() {
             // Initialize rate limiters (100 requests per 60 seconds)
             app.manage(RecordingRateLimiter(Arc::new(RateLimiter::new(100, 60))));
             app.manage(TranscriptionRateLimiter(Arc::new(RateLimiter::new(50, 60))));
+            app.manage(TextInjectionRateLimiter(Arc::new(RateLimiter::new(100, 60))));
 
             setup_window_icons(app)?;
 

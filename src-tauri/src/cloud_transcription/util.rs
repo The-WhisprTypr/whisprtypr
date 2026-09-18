@@ -1,5 +1,5 @@
 use crate::license::get_device_id;
-use crate::security::{decrypt_data, derive_encryption_key, encrypt_data};
+use crate::security::{decrypt_data, encrypt_data};
 use reqwest::Client;
 use std::io::Cursor;
 use std::time::Duration;
@@ -37,8 +37,7 @@ pub fn encrypt_api_key(api_key: &str) -> Result<String, String> {
         return Ok(String::new());
     }
     let device_id = get_device_id();
-    let enc_key = derive_encryption_key(&device_id);
-    let encrypted = encrypt_data(api_key.as_bytes(), &enc_key)?;
+    let encrypted = encrypt_data(api_key.as_bytes(), &device_id)?;
     Ok(hex::encode(encrypted))
 }
 
@@ -50,8 +49,7 @@ pub fn decrypt_api_key(stored_key: &str) -> String {
 
     if let Ok(bytes) = hex::decode(trimmed) {
         let device_id = get_device_id();
-        let enc_key = derive_encryption_key(&device_id);
-        if let Ok(decrypted) = decrypt_data(&bytes, &enc_key) {
+        if let Ok(decrypted) = decrypt_data(&bytes, &device_id) {
             if let Ok(s) = String::from_utf8(decrypted) {
                 return s;
             }

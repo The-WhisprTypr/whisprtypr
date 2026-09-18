@@ -9,6 +9,7 @@ pub use self::text::is_valid_language_code;
 pub use self::text::is_youtube_url;
 pub use self::text::sanitize_text;
 pub use self::text::sanitize_url;
+pub use self::text::validate_url_host;
 
 pub const AUDIO_FILE_EXTENSIONS: &[&str] =
     &["wav", "mp3", "m4a", "ogg", "flac", "aac", "webm", "mkv"];
@@ -84,6 +85,52 @@ pub mod text {
         }
 
         Ok(trimmed.to_string())
+    }
+
+    fn is_private_ip(ip: std::net::IpAddr) -> bool {
+        match ip {
+            std::net::IpAddr::V4(ipv4) => {
+                let octets = ipv4.octets();
+                matches!(
+                    octets,
+                    [10, ..]
+                        | [127, ..]
+                        | [169, 254, ..]
+                        | [172, 16..=31, ..]
+                        | [192, 168, ..]
+                        | [0, ..]
+                        | [255, 255, 255, 255]
+                )
+            }
+            std::net::IpAddr::V6(ipv6) => {
+                let segments = ipv6.segments();
+                ipv6.is_loopback()
+                    || ipv6.is_unspecified()
+                    || (segments[0] & 0xfe00 == 0xfc00)
+                    || (segments[0] & 0xffc0 == 0xfe80)
+                    || (segments[0] == 0x2001 && segments[1] == 0xdb8)
+            }
+        }
+    }
+
+    pub async fn validate_url_host(url: &str) -> Result<(), String> {
+        let parsed = url::Url::parse(url).map_err(|e| format!("Invalid URL: {}", e))?;
+        let host = parsed.host_str().ok_or("URL missing host")?;
+
+        let addrs = tokio::net::lookup_host(format!("{}:80", host))
+            .await
+            .map_err(|e| format!("DNS resolution failed: {}", e))?;
+
+        for addr in addrs {
+            if is_private_ip(addr.ip()) {
+                return Err(format!(
+                    "URL resolves to private/internal IP address: {}",
+                    addr.ip()
+                ));
+            }
+        }
+
+        Ok(())
     }
 }
 

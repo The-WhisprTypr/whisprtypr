@@ -1,8 +1,18 @@
-use crate::{CommandError, CommandResult, TextInjectorState};
+use crate::{CommandError, CommandResult, TextInjectorState, TextInjectionRateLimiter};
 use tauri::State;
 
 #[tauri::command]
-pub fn inject_text(injector: State<TextInjectorState>, text: String) -> CommandResult<()> {
+pub fn inject_text(
+    injector: State<TextInjectorState>,
+    rate_limiter: State<TextInjectionRateLimiter>,
+    text: String,
+) -> CommandResult<()> {
+    if !rate_limiter.0.check("inject_text") {
+        return Err(CommandError::TextInjection(
+            "Rate limit exceeded. Please wait before injecting more text.".to_string(),
+        ));
+    }
+
     let sanitized =
         crate::utils::sanitize_text(&text, 100_000).map_err(CommandError::TextInjection)?;
 
