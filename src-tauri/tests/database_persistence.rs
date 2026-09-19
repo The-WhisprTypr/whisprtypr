@@ -45,9 +45,10 @@ fn database_state_survives_reopen() {
             expires_at: None,
             is_activated: true,
             last_validated_at: Some("2026-04-19T00:00:00+00:00".to_string()),
-            trial_started_at: Some("2026-04-01T00:00:00+00:00".to_string()),
-            trial_integrity_hash: Some("trial-hash".to_string()),
-            usage: 7,
+    trial_started_at: Some("2026-04-01T00:00:00+00:00".to_string()),
+    trial_integrity_hash: Some("trial-hash".to_string()),
+    trial_salt: Some("test-salt".to_string()),
+    usage: 7,
             validations: 8,
         })
         .unwrap();

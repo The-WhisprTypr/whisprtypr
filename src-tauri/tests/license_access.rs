@@ -12,6 +12,7 @@ fn active_license() -> database::LicenseData {
         last_validated_at: Some(chrono::Utc::now().to_rfc3339()),
         trial_started_at: None,
         trial_integrity_hash: None,
+        trial_salt: None,
         usage: 1,
         validations: 1,
     }
