@@ -6,6 +6,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { captureSentryException } from "@/lib/sentry";
+import type { GrammarError } from "@/types";
 
 // ============================================
 // Types
@@ -229,6 +230,18 @@ export async function formatTextWithAi(text: string): Promise<string> {
 
 export async function extractVoiceCommands(text: string): Promise<string> {
   return await invoke<string>("extract_voice_commands", { text });
+}
+
+// ============================================
+// Grammar Checking API (local, offline via Harper)
+// ============================================
+
+export async function checkGrammar(text: string): Promise<GrammarError[]> {
+  return await invoke<GrammarError[]>("check_grammar", { text });
+}
+
+export async function fixGrammar(text: string): Promise<string> {
+  return await invoke<string>("fix_grammar", { text });
 }
 
 // ============================================

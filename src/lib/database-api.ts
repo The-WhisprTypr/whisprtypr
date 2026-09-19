@@ -37,10 +37,12 @@ export interface DbAppSettings {
   translation_source_language: string;
    translation_target_language: string;
    translation_api_key: string;
-   ai_formatting_enabled: boolean;
-   ai_formatting_provider_id: string;
-   ai_formatting_style: string;
-   ai_formatting_model: string;
+    ai_formatting_enabled: boolean;
+    ai_formatting_provider_id: string;
+    ai_formatting_style: string;
+    ai_formatting_model: string;
+    grammar_check_enabled: boolean;
+    grammar_check_dialect: string;
 }
 
 export interface DbAppState {
@@ -191,6 +193,7 @@ import type {
     AiFormattingProviderId,
     AiFormattingStyle,
     AppSettings,
+    GrammarDialect,
     ModelCapabilities,
     WhisperModel,
 } from "@/types";
@@ -227,6 +230,9 @@ export function dbSettingsToFrontend(db: DbAppSettings): AppSettings {
       (db.ai_formatting_provider_id as AiFormattingProviderId) ?? "openai",
     aiFormattingStyle: (db.ai_formatting_style as AiFormattingStyle) ?? "clean",
     aiFormattingModel: db.ai_formatting_model ?? "gpt-4o-mini",
+
+    grammarCheckEnabled: db.grammar_check_enabled ?? true,
+    grammarCheckDialect: (db.grammar_check_dialect as GrammarDialect) ?? "american",
   };
 }
 
@@ -262,6 +268,9 @@ export function frontendSettingsToDb(settings: AppSettings): DbAppSettings {
     ai_formatting_provider_id: settings.aiFormattingProviderId,
     ai_formatting_style: settings.aiFormattingStyle,
     ai_formatting_model: settings.aiFormattingModel,
+
+    grammar_check_enabled: settings.grammarCheckEnabled,
+    grammar_check_dialect: settings.grammarCheckDialect,
   };
 }
 

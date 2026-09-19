@@ -159,6 +159,42 @@ export const AI_FORMATTING_STYLE_LABELS: Record<AiFormattingStyle, string> = {
   journaling: "Journaling",
 };
 
+// ==================== Grammar Checking ====================
+
+export type SuggestionAction = "replace" | "insert_after" | "remove";
+
+export interface GrammarSuggestion {
+  replacement: string;
+  action: SuggestionAction;
+}
+
+export interface GrammarError {
+  /** Character index where the error starts (end-exclusive with `end`). */
+  start: number;
+  /** Character index where the error ends. */
+  end: number;
+  /** The problematic text detected by Harper. */
+  text: string;
+  /** Human-readable explanation of the issue. */
+  message: string;
+  /** Category of the error (e.g. "spelling", "typo", "grammar"). */
+  kind: string;
+  /** Importance: lower values indicate more important errors. */
+  priority: number;
+  /** Suggested replacements for the error. */
+  suggestions: GrammarSuggestion[];
+}
+
+export type GrammarDialect = "american" | "british" | "canadian" | "australian" | "indian";
+
+export const GRAMMAR_DIALECT_LABELS: Record<GrammarDialect, string> = {
+  american: "American English",
+  british: "British English",
+  canadian: "Canadian English",
+  australian: "Australian English",
+  indian: "Indian English",
+};
+
 // Available Whisper models for offline transcription & BYOK cloud models
 export interface WhisperModel {
   id: string;
@@ -221,6 +257,10 @@ export interface AppSettings {
   aiFormattingProviderId: AiFormattingProviderId;
   aiFormattingStyle: AiFormattingStyle;
   aiFormattingModel: string;
+
+  // Grammar checking (local, offline via Harper)
+  grammarCheckEnabled: boolean;
+  grammarCheckDialect: GrammarDialect;
 
   // Advanced
   autoStartOnBoot: boolean;
@@ -316,6 +356,10 @@ export const DEFAULT_SETTINGS: AppSettings = {
   aiFormattingProviderId: "openai",
   aiFormattingStyle: "clean",
   aiFormattingModel: "gpt-4o-mini",
+
+  // Grammar checking (local, offline via Harper)
+  grammarCheckEnabled: true,
+  grammarCheckDialect: "american" as const,
 
   autoStartOnBoot: false,
   minimizeToTray: true,

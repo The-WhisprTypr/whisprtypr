@@ -76,6 +76,9 @@ hostname = "0.4"
 regex = "1"
 lazy_static = "1.4"
 
+# Grammar checking (offline, local)
+harper-core = "2"
+
 # URL encoding for translation requests
 urlencoding = "2.1"
 

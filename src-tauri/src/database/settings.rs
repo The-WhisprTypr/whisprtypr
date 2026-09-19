@@ -9,7 +9,8 @@ pub fn get_settings(db: &Database) -> Result<AppSettings> {
                     show_recording_indicator, show_recording_overlay, play_audio_feedback, auto_start_on_boot, minimize_to_tray,
                     post_processing_enabled, voice_commands_enabled, clipboard_mode, auto_check_for_updates, recording_overlay_position, custom_vocabulary, diagnostics_enabled,
                     translation_enabled, translation_hotkey, translation_source_language, translation_target_language, translation_api_key,
-                    ai_formatting_enabled, ai_formatting_provider_id, ai_formatting_style, ai_formatting_model
+                    ai_formatting_enabled, ai_formatting_provider_id, ai_formatting_style, ai_formatting_model,
+                    grammar_check_enabled, grammar_check_dialect
                  FROM settings WHERE id = 1",
         [],
         |row| {
@@ -57,6 +58,10 @@ pub fn get_settings(db: &Database) -> Result<AppSettings> {
                 ai_formatting_model: row
                     .get(25)
                     .unwrap_or_else(|_| "gpt-4o-mini".to_string()),
+                grammar_check_enabled: row.get::<_, i32>(26).unwrap_or(1) == 1,
+                grammar_check_dialect: row
+                    .get(27)
+                    .unwrap_or_else(|_| "american".to_string()),
             })
         },
     )
@@ -94,6 +99,8 @@ pub fn update_settings(db: &Database, settings: &AppSettings) -> Result<()> {
                 ai_formatting_provider_id = ?24,
                 ai_formatting_style = ?25,
                 ai_formatting_model = ?26,
+                grammar_check_enabled = ?27,
+                grammar_check_dialect = ?28,
                 updated_at = CURRENT_TIMESTAMP
              WHERE id = 1",
         params![
@@ -123,6 +130,8 @@ pub fn update_settings(db: &Database, settings: &AppSettings) -> Result<()> {
             settings.ai_formatting_provider_id,
             settings.ai_formatting_style,
             settings.ai_formatting_model,
+            settings.grammar_check_enabled as i32,
+            settings.grammar_check_dialect,
         ],
     )?;
     Ok(())
@@ -156,6 +165,8 @@ pub fn update_setting(db: &Database, key: &str, value: &str) -> Result<()> {
         "ai_formatting_provider_id",
         "ai_formatting_style",
         "ai_formatting_model",
+        "grammar_check_enabled",
+        "grammar_check_dialect",
     ];
 
     if !ALLOWED_KEYS.contains(&key) {

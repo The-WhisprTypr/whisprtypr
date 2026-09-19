@@ -7,6 +7,7 @@ pub mod commands;
 pub mod database;
 pub mod downloader;
 pub mod error_reporting;
+pub mod grammar;
 pub mod license;
 pub mod post_process;
 pub mod providers;
@@ -17,6 +18,7 @@ mod translation;
 pub mod utils;
 
 pub use commands::*;
+pub use grammar::{GrammarDialect, GrammarError, GrammarSuggestion, SuggestionAction};
 pub use utils::*;
 
 use audio::AudioRecorder;
@@ -110,6 +112,8 @@ pub enum CommandError {
     License(String),
     #[error("Post-processing error: {0}")]
     PostProcessing(String),
+    #[error("Grammar error: {0}")]
+    Grammar(String),
 }
 
 fn user_facing_license_error(error: &str) -> &'static str {
@@ -534,6 +538,9 @@ pub fn run() {
             // Post-processing
             post_process_text,
             extract_voice_commands,
+            // Grammar checking
+            check_grammar,
+            fix_grammar,
             // Transcription history
             add_transcription,
             get_transcription_history,

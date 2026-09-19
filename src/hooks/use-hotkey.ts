@@ -75,6 +75,18 @@ export function useHotkey() {
   const handleRecordingStart = useCallback(async (sourceLanguage?: string) => {
     if (isRecordingRef.current) return;
 
+    // Set recording state immediately to prevent race conditions with
+    // rapid press/release events in push-to-talk mode. The release event
+    // handler checks this flag, so it must be set before any async work.
+    isRecordingRef.current = true;
+    setRecordingStatus("recording");
+    showOverlay();
+
+    // Play start feedback sound if enabled
+    if (settingsRef.current.playAudioFeedback) {
+      playFeedbackSound("start");
+    }
+
     try {
       const model = selectedModelRef.current;
       const lang = sourceLanguage || settingsRef.current.language;
@@ -86,21 +98,20 @@ export function useHotkey() {
       }
 
       await recordingPromise;
-      isRecordingRef.current = true;
-      setRecordingStatus("recording");
-      showOverlay();
-
-      // Play start feedback sound if enabled
-      if (settingsRef.current.playAudioFeedback) {
-        playFeedbackSound("start");
-      }
     } catch (error) {
       console.error("Failed to start recording:", error);
+      isRecordingRef.current = false;
+      setRecordingStatus("error");
       setErrorMessage(
         error instanceof Error ? error.message : "Failed to start recording",
       );
+      hideOverlay();
+      setTimeout(() => setRecordingStatus("idle"), 2000);
+      if (settingsRef.current.playAudioFeedback) {
+        playFeedbackSound("stop");
+      }
     }
-  }, [setRecordingStatus, setErrorMessage, showOverlay]);
+  }, [setRecordingStatus, setErrorMessage, showOverlay, hideOverlay]);
 
   /**
    * Apply post-processing and voice commands to transcribed text based
@@ -291,21 +302,25 @@ export function useHotkey() {
       }
     })();
 
-    const trigger = (label: string) => {
+    const trigger = (eventType: "pressed" | "released", label: string) => {
       if (label === "translate") {
         if (settingsRef.current.translationEnabled && settingsRef.current.translationHotkey) {
           if (settingsRef.current.hotkeyMode === "push-to-talk") {
-            if (isTranslationActiveRef.current) {
+            // Push-to-talk: press starts, release stops
+            if (eventType === "pressed") {
+              if (!isTranslationActiveRef.current) {
+                isTranslationActiveRef.current = true;
+                handleRecordingStart(settingsRef.current.translationSourceLanguage);
+              }
+            } else if (isTranslationActiveRef.current) {
               isTranslationActiveRef.current = false;
               handleRecordingStopWithTranslation(
                 settingsRef.current.translationSourceLanguage,
                 settingsRef.current.translationTargetLanguage,
               );
-            } else {
-              isTranslationActiveRef.current = true;
-              handleRecordingStart(settingsRef.current.translationSourceLanguage);
             }
-          } else {
+          } else if (eventType === "pressed") {
+            // Toggle mode: only respond to pressed
             if (isRecordingRef.current) {
               handleRecordingStop();
             } else {
@@ -313,29 +328,32 @@ export function useHotkey() {
             }
           }
         }
-      } else {
-        const mode = settingsRef.current.hotkeyMode;
-        if (mode === "push-to-talk") {
-          if (isRecordingRef.current) {
-            handleRecordingStop();
-          } else {
-            handleRecordingStart();
-          }
+      } else if (settingsRef.current.hotkeyMode === "push-to-talk") {
+        // Push-to-talk: press starts, release stops
+        if (eventType === "pressed") {
+          handleRecordingStart();
         } else {
-          if (isRecordingRef.current) {
-            handleRecordingStop();
-          } else {
-            handleRecordingStart();
-          }
+          handleRecordingStop();
+        }
+      } else if (eventType === "pressed") {
+        // Toggle mode: only respond to pressed
+        if (isRecordingRef.current) {
+          handleRecordingStop();
+        } else {
+          handleRecordingStart();
         }
       }
     };
 
-    const onEvent = (payload: HotkeyEventPayload) => {
-      trigger(payload.label);
+    const onPressed = (payload: HotkeyEventPayload) => {
+      trigger("pressed", payload.label);
     };
 
-    onHotkeyPressed(onEvent)
+    const onReleased = (payload: HotkeyEventPayload) => {
+      trigger("released", payload.label);
+    };
+
+    onHotkeyPressed(onPressed)
       .then((fn) => {
         if (cancelled) {
           fn();
@@ -347,7 +365,7 @@ export function useHotkey() {
         console.error("Failed to set up onHotkeyPressed:", err);
       });
 
-    onHotkeyReleased(onEvent)
+    onHotkeyReleased(onReleased)
       .then((fn) => {
         if (cancelled) {
           fn();

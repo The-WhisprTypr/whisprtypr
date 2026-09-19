@@ -1,5 +1,6 @@
 import {
     AlertCircle,
+    BookText,
     Circle,
     Clipboard,
     Globe,
@@ -31,6 +32,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Logo } from "@/components/logo";
 import { LANGUAGE_NAMES } from "@/types";
+import { GRAMMAR_DIALECT_LABELS, type GrammarDialect } from "@/types";
 
 interface SettingsViewProps {
   onClose: () => void;
@@ -577,7 +579,42 @@ export function SettingsView(_props: SettingsViewProps) {
                 checked={settings.voiceCommandsEnabled}
                 onChange={(checked) => updateSettings({ voiceCommandsEnabled: checked })}
               />
+              <SettingRow
+                icon={<BookText className="h-3.5 w-3.5" />}
+                iconClass={settings.grammarCheckEnabled ? "bg-primary/10 text-primary" : ""}
+                title="Grammar check"
+                description="Fix spelling and grammar with a local offline checker (Harper)"
+                checked={settings.grammarCheckEnabled}
+                onChange={(checked) => updateSettings({ grammarCheckEnabled: checked })}
+              />
             </div>
+
+            {settings.grammarCheckEnabled && (
+              <div className="pt-3">
+                <Label className="caption-strong text-ink block mb-1.5">
+                  Grammar dialect
+                </Label>
+                <Select
+                  value={settings.grammarCheckDialect ?? "american"}
+                  onValueChange={(val) =>
+                    updateSettings({ grammarCheckDialect: val as GrammarDialect })
+                  }
+                >
+                  <SelectTrigger className="w-full h-8 px-2.5 text-xs bg-canvas rounded-lg border border-hairline text-ink focus:outline-none focus:border-primary">
+                    <SelectValue placeholder="Select dialect" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Object.entries(GRAMMAR_DIALECT_LABELS) as [GrammarDialect, string][]).map(
+                      ([value, label]) => (
+                        <SelectItem key={value} value={value} className="text-xs">
+                          {label}
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </section>
 
           {/* ─── OUTPUT — White surface ─── */}

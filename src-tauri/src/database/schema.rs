@@ -46,6 +46,17 @@ impl Database {
                 auto_check_for_updates INTEGER NOT NULL DEFAULT 0,
                 diagnostics_enabled INTEGER NOT NULL DEFAULT 1,
                 custom_vocabulary TEXT NOT NULL DEFAULT '[]',
+                translation_enabled INTEGER NOT NULL DEFAULT 0,
+                translation_hotkey TEXT NOT NULL DEFAULT 'Alt+Shift+T',
+                translation_source_language TEXT NOT NULL DEFAULT 'en',
+                translation_target_language TEXT NOT NULL DEFAULT 'es',
+                translation_api_key TEXT,
+                ai_formatting_enabled INTEGER NOT NULL DEFAULT 0,
+                ai_formatting_provider_id TEXT NOT NULL DEFAULT 'openai',
+                ai_formatting_style TEXT NOT NULL DEFAULT 'clean',
+                ai_formatting_model TEXT NOT NULL DEFAULT 'gpt-4o-mini',
+                grammar_check_enabled INTEGER NOT NULL DEFAULT 1,
+                grammar_check_dialect TEXT NOT NULL DEFAULT 'american',
                 updated_at TEXT DEFAULT CURRENT_TIMESTAMP
             )",
             [],
@@ -138,6 +149,16 @@ impl Database {
         );
         let _ = conn.execute(
             "ALTER TABLE settings ADD COLUMN ai_formatting_model TEXT NOT NULL DEFAULT 'gpt-4o-mini'",
+            [],
+        );
+
+        // Add grammar check settings columns if they don't exist (migration for existing DBs)
+        let _ = conn.execute(
+            "ALTER TABLE settings ADD COLUMN grammar_check_enabled INTEGER NOT NULL DEFAULT 1",
+            [],
+        );
+        let _ = conn.execute(
+            "ALTER TABLE settings ADD COLUMN grammar_check_dialect TEXT NOT NULL DEFAULT 'american'",
             [],
         );
 

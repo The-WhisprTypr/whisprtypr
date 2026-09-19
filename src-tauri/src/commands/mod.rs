@@ -1,5 +1,6 @@
 pub mod download;
 pub mod error_reporting;
+pub mod grammar;
 pub mod history;
 pub mod license;
 pub mod models;
@@ -13,6 +14,7 @@ pub mod utility;
 
 pub use download::*;
 pub use error_reporting::*;
+pub use grammar::*;
 pub use history::*;
 pub use license::*;
 pub use models::*;

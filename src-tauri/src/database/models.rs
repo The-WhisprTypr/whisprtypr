@@ -44,6 +44,8 @@ pub struct AppSettings {
     pub ai_formatting_provider_id: String,
     pub ai_formatting_style: String,
     pub ai_formatting_model: String,
+    pub grammar_check_enabled: bool,
+    pub grammar_check_dialect: String,
 }
 
 impl Default for AppSettings {
@@ -75,6 +77,8 @@ impl Default for AppSettings {
             ai_formatting_provider_id: "openai".to_string(),
             ai_formatting_style: "clean".to_string(),
             ai_formatting_model: "gpt-4o-mini".to_string(),
+            grammar_check_enabled: true,
+            grammar_check_dialect: "american".to_string(),
         }
     }
 }
