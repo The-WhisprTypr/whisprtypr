@@ -217,6 +217,7 @@ pub fn fix_grammar(text: &str, dialect: GrammarDialect) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::str::FromStr;
 
     #[test]
     fn test_check_grammar_detects_spelling_error() {
