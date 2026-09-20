@@ -1,5 +1,5 @@
-import * as Sentry from "@sentry/react";
 import { useAppStore } from "@/store";
+import * as Sentry from "@sentry/react";
 
 const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN;
 
@@ -11,7 +11,7 @@ export function initSentry(): void {
 
     Sentry.init({
       dsn: SENTRY_DSN,
-      release: "whisprtypr@1.0.0",
+      release: "whisprtypr@1.0.1",
       environment: import.meta.env.MODE,
       beforeSend(event) {
         const currentSettings = useAppStore.getState().settings;

@@ -7,7 +7,7 @@ import { relaunch } from "@tauri-apps/plugin-process";
 import { check } from "@tauri-apps/plugin-updater";
 import { logger } from "./logger";
 
-const MINIMUM_SAFE_UPDATE_VERSION = "1.0.0";
+const MINIMUM_SAFE_UPDATE_VERSION = "1.0.1";
 const UPDATER_CHECK_OPTIONS = { allowDowngrades: false } as const;
 
 export interface UpdateInfo {

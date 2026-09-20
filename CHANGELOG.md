@@ -4,6 +4,20 @@ All notable changes to Whisprtypr will be documented in this file.
 
 This project follows the spirit of [Keep a Changelog](https://keepachangelog.com/) and uses semantic version tags when releases are published.
 
+## 1.0.1
+
+### Fixed
+- **macOS Launch Crash (`DYLD: Library missing`)**: Resolved a fatal crash on macOS (especially Intel x86_64) at startup caused by missing `libonnxruntime.1.23.2.dylib` and absent `LC_RPATH` headers.
+  - Bundled `libonnxruntime.1.23.2.dylib` directly into `Whisprtypr.app/Contents/Frameworks/`.
+  - Embedded `@executable_path/../Frameworks` into the Mach-O binary runtime search paths.
+  - Resolved `___isPlatformVersionAtLeast` undefined symbol linker errors on macOS by linking Apple Clang `compiler-rt` and providing runtime availability check shims.
+  - Aligned macOS deployment target to 13.4 to match ONNX Runtime 1.23.2 and Metal requirements.
+  - Added automated CI verification to assert `LC_RPATH` headers and framework presence on macOS builds.
+
+### Added
+- **Offline Grammar Checking**: Integrated local, privacy-focused grammar checking using Harper.
+- **Security & Integrity Enhancements**: Strengthened trial integrity mechanisms, salt hashing, and encrypted credential storage.
+
 ## 1.0.0
 
 feat(ui): release v1.0.0 with dashboard, custom vocabulary, and redesigned UI

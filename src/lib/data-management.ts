@@ -5,9 +5,9 @@
 
 import { invoke } from "@tauri-apps/api/core";
 import {
-    clearTranscriptionHistory,
-    getTranscriptionHistory,
-    type TranscriptionHistoryItem,
+  clearTranscriptionHistory,
+  getTranscriptionHistory,
+  type TranscriptionHistoryItem,
 } from "./voice-api";
 
 export interface ExportData {
@@ -23,7 +23,7 @@ export async function exportAppData(): Promise<string> {
   const history = await getTranscriptionHistory(10000); // Get all history
 
   const exportData: ExportData = {
-    version: "1.0.0",
+    version: "1.0.1",
     exportedAt: new Date().toISOString(),
     history,
   };

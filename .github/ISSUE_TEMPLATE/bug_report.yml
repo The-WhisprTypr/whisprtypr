@@ -42,7 +42,7 @@ body:
     id: version
     attributes:
       label: Whisprtypr Version Or Commit
-      placeholder: "v1.0.0"
+      placeholder: "v1.0.1"
   - type: dropdown
     id: platform
     attributes:

@@ -1,6 +1,6 @@
 [package]
 name = "whisprtypr"
-version = "1.0.0"
+version = "1.0.1"
 description = "Open-source desktop voice-to-text app with local AI transcription"
 authors = ["The Whisprtypr Team"]
 edition = "2021"

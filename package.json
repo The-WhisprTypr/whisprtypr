@@ -1,7 +1,7 @@
 {
   "name": "whisprtypr",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Open-source desktop dictation app that turns your voice into text at your cursor",
   "author": "The Whisprtypr Team",
   "license": "AGPL-3.0-only",
