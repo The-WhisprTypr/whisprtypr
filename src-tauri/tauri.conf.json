@@ -71,7 +71,7 @@
     "licenseFile": "../LICENSE",
     "macOS": {
       "entitlements": "Whisprtypr.entitlements",
-      "minimumSystemVersion": "13.0",
+      "minimumSystemVersion": "13.4",
       "frameworks": [
         "Frameworks/libonnxruntime.1.23.2.dylib"
       ],

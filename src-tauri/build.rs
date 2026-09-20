@@ -45,9 +45,9 @@ fn main() {
     let target_os = std::env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
     if target_os == "macos" {
         // Embed runtime search paths into the Mach-O binary so dyld can locate
-        // bundled dynamic libraries (such as libonnxruntime) both in the .app
-        // bundle (Contents/Frameworks) and in development/direct binary execution.
-        println!("cargo:rustc-link-arg=-Wl,-rpath,@executable_path/../Frameworks");
+        // dynamic libraries both in direct binary execution (@executable_path)
+        // and via loader paths. Tauri automatically adds @executable_path/../Frameworks
+        // via bundle.macOS.frameworks in tauri.conf.json.
         println!("cargo:rustc-link-arg=-Wl,-rpath,@executable_path");
         println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path/../Frameworks");
         println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path");
