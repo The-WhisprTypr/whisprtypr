@@ -30,5 +30,11 @@ pub unsafe extern "C" fn ___isPlatformVersionAtLeast(
 }
 
 fn main() {
+    #[cfg(target_os = "macos")]
+    {
+        // Keep symbol live during LTO / dead-stripping so it satisfies native object files
+        std::hint::black_box(___isPlatformVersionAtLeast as *const ());
+    }
+
     whisprtypr_lib::run()
 }

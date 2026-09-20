@@ -52,6 +52,51 @@ fn main() {
         println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path/../Frameworks");
         println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path");
 
+        // Link Apple Clang's compiler-rt (libclang_rt.osx.a) which provides runtime
+        // helper symbols like ___isPlatformVersionAtLeast required by Clang's @available
+        // checks in native dependencies (e.g. whisper-rs-sys / ggml-metal) under -nodefaultlibs.
+        let clang_cmds = [
+            ("xcrun", vec!["clang", "-print-file-name=libclang_rt.osx.a"]),
+            ("clang", vec!["-print-file-name=libclang_rt.osx.a"]),
+        ];
+        let mut linked_compiler_rt = false;
+        for (cmd, args) in &clang_cmds {
+            if let Ok(output) = std::process::Command::new(cmd).args(args).output() {
+                if output.status.success() {
+                    let path_str = String::from_utf8_lossy(&output.stdout).trim().to_string();
+                    let path = std::path::Path::new(&path_str);
+                    if path.is_file() && path.exists() {
+                        println!("cargo:rustc-link-arg={}", path.display());
+                        println!("cargo:warning=Linked compiler-rt: {}", path.display());
+                        linked_compiler_rt = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if !linked_compiler_rt {
+            let candidates = [
+                "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang",
+                "/Library/Developer/CommandLineTools/usr/lib/clang",
+            ];
+            for candidate in &candidates {
+                if let Ok(entries) = std::fs::read_dir(candidate) {
+                    for entry in entries.flatten() {
+                        let rt_path = entry.path().join("lib").join("darwin").join("libclang_rt.osx.a");
+                        if rt_path.is_file() && rt_path.exists() {
+                            println!("cargo:rustc-link-arg={}", rt_path.display());
+                            println!("cargo:warning=Linked compiler-rt from fallback: {}", rt_path.display());
+                            linked_compiler_rt = true;
+                            break;
+                        }
+                    }
+                }
+                if linked_compiler_rt {
+                    break;
+                }
+            }
+        }
+
         // Enable Metal acceleration for Qwen3-ASR (available on macOS)
         println!("cargo:rustc-cfg=metal");
         println!("cargo:warning=Qwen3-ASR Metal acceleration enabled");
