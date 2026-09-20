@@ -97,9 +97,14 @@ fn main() {
             }
         }
 
-        // Enable Metal acceleration for Qwen3-ASR (available on macOS)
-        println!("cargo:rustc-cfg=metal");
-        println!("cargo:warning=Qwen3-ASR Metal acceleration enabled");
+        // Enable Metal acceleration for Qwen3-ASR on Apple Silicon (aarch64)
+        let target_arch = std::env::var("CARGO_CFG_TARGET_ARCH").unwrap_or_default();
+        if target_arch == "aarch64" {
+            println!("cargo:rustc-cfg=metal");
+            println!("cargo:warning=Qwen3-ASR Metal acceleration enabled");
+        } else {
+            println!("cargo:warning=Qwen3-ASR Metal acceleration disabled on x86_64 macOS; using CPU fallback");
+        }
 
         // Ensure Frameworks directory and libonnxruntime exist for bundling
         let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_default();

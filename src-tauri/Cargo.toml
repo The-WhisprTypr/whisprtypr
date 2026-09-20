@@ -118,9 +118,13 @@ symphonia = { version = "0.5.5", features = ["mp3", "ogg", "flac", "aac", "isomp
 [target.'cfg(target_os = "windows")'.dependencies]
 transcribe-rs = { version = "0.3.11", features = ["onnx", "ort-directml"] }
 
-[target.'cfg(target_os = "macos")'.dependencies]
+[target.'cfg(all(target_os = "macos", target_arch = "aarch64"))'.dependencies]
 whisper-rs = { version = "0.16", features = ["metal"] }
 transcribe-rs = { version = "0.3.11", features = ["onnx", "ort-coreml"] }
+
+[target.'cfg(all(target_os = "macos", target_arch = "x86_64"))'.dependencies]
+whisper-rs = { version = "0.16" }
+transcribe-rs = { version = "0.3.11", features = ["onnx"] }
 
 # Windows: CUDA support (optional)
 # [target.'cfg(target_os = "windows")'.dependencies]

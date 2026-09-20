@@ -422,10 +422,18 @@ pub fn run() {
             // window visibility is driven by the stored setting at runtime.
             let args: Vec<String> = std::env::args().collect();
             let is_minimized = args.contains(&"--minimized".to_string());
-            if is_minimized {
-                if let Some(main_window) = app.get_webview_window("main") {
+            if let Some(main_window) = app.get_webview_window("main") {
+                if is_minimized {
                     let _ = main_window.hide();
+                } else {
+                    let _ = main_window.show();
+                    let _ = main_window.unminimize();
+                    let _ = main_window.set_focus();
                 }
+            }
+
+            if let Some(overlay_window) = app.get_webview_window("recording-overlay") {
+                let _ = overlay_window.hide();
             }
 
             info!("Application initialized successfully");

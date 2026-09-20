@@ -42,7 +42,7 @@
         "visible": false,
         "skipTaskbar": true,
         "focus": false,
-        "fullscreen": true
+        "fullscreen": false
       }
     ],
     "security": {

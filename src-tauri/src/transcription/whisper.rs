@@ -15,7 +15,22 @@ impl WhisperTranscriber {
         }
 
         let mut ctx_params = WhisperContextParameters::default();
-        ctx_params.flash_attn(true);
+
+        // On macOS x86_64 (Intel), Metal GPU may be unavailable (VMs, older
+        // hardware without a discrete GPU). whisper.cpp / ggml-metal calls
+        // MTLCreateSystemDefaultDevice() which returns NULL in those cases,
+        // causing a null-pointer dereference (SIGSEGV). Disable GPU and
+        // flash_attn on Intel Macs to safely fall back to CPU inference.
+        #[cfg(all(target_os = "macos", target_arch = "x86_64"))]
+        {
+            ctx_params.use_gpu(false);
+            ctx_params.flash_attn(false);
+            log::info!("Whisper: GPU disabled on Intel Mac — using CPU inference");
+        }
+        #[cfg(not(all(target_os = "macos", target_arch = "x86_64")))]
+        {
+            ctx_params.flash_attn(true);
+        }
 
         let ctx = WhisperContext::new_with_params(model_path, ctx_params)
             .map_err(|e| format!("Failed to load Whisper model: {}", e))?;
