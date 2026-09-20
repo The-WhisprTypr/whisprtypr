@@ -18,6 +18,7 @@ dist
 dist-ssr
 *.local
 src-tauri/target
+src-tauri/Frameworks/
 release-signing/
 release-assets/
 *.msi

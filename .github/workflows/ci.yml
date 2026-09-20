@@ -246,6 +246,25 @@ jobs:
           # emit `cargo:rerun-if-changed=build.rs` but a full clean is
           # the only guarantee when the build script itself changes.
           rm -rf src-tauri/target
+      - name: Setup ONNX Runtime (macOS)
+        run: |
+          ORT_VERSION="1.23.2"
+          ORT_ARCH="arm64"
+          ORT_ARCHIVE="onnxruntime-osx-${ORT_ARCH}-${ORT_VERSION}.tgz"
+          ORT_ROOT="${RUNNER_TEMP}/onnxruntime"
+          curl -L "https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/${ORT_ARCHIVE}" -o "${RUNNER_TEMP}/${ORT_ARCHIVE}"
+          mkdir -p "${ORT_ROOT}"
+          tar -xzf "${RUNNER_TEMP}/${ORT_ARCHIVE}" -C "${ORT_ROOT}"
+          ORT_DIR="${ORT_ROOT}/onnxruntime-osx-${ORT_ARCH}-${ORT_VERSION}"
+          echo "ORT_LIB_PATH=${ORT_DIR}/lib" >> "$GITHUB_ENV"
+          echo "ORT_LIB_LOCATION=${ORT_DIR}/lib" >> "$GITHUB_ENV"
+          echo "ORT_PREFER_DYNAMIC_LINK=1" >> "$GITHUB_ENV"
+          echo "DYLD_LIBRARY_PATH=${ORT_DIR}/lib:${DYLD_LIBRARY_PATH}" >> "$GITHUB_ENV"
+
+          mkdir -p src-tauri/Frameworks
+          cp -a "${ORT_DIR}/lib/libonnxruntime.${ORT_VERSION}.dylib" src-tauri/Frameworks/
+          ln -sf "libonnxruntime.${ORT_VERSION}.dylib" src-tauri/Frameworks/libonnxruntime.dylib
+
       - run: pnpm install --frozen-lockfile
       - run: pnpm tauri build --bundles app --target aarch64-apple-darwin --config '{"bundle":{"createUpdaterArtifacts":false}}'
       - name: Validate macOS app bundle
@@ -253,5 +272,12 @@ jobs:
           APP_PATH="$(find src-tauri/target/aarch64-apple-darwin/release/bundle/macos -maxdepth 1 -name '*.app' -type d -print -quit)"
           test -n "$APP_PATH"
           plutil -lint "$APP_PATH/Contents/Info.plist"
+
+          # Verify that ONNX Runtime dylib was bundled into Contents/Frameworks
+          test -f "$APP_PATH/Contents/Frameworks/libonnxruntime.1.23.2.dylib"
+
+          # Verify that LC_RPATH load command includes @executable_path/../Frameworks
+          otool -l "$APP_PATH/Contents/MacOS/whisprtypr" | grep -A 2 LC_RPATH | grep -q '@executable_path/../Frameworks'
+
           codesign --force --deep --sign - "$APP_PATH"
           codesign --verify --deep --strict --verbose=2 "$APP_PATH"

@@ -72,7 +72,9 @@
     "macOS": {
       "entitlements": "Whisprtypr.entitlements",
       "minimumSystemVersion": "13.0",
-      "frameworks": [],
+      "frameworks": [
+        "Frameworks/libonnxruntime.1.23.2.dylib"
+      ],
       "hardenedRuntime": false,
       "signingIdentity": null,
       "providerShortName": null,

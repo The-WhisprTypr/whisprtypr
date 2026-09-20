@@ -212,20 +212,29 @@ jobs:
           echo "LIBCLANG_PATH=$(find /usr/lib -name 'libclang.so*' -printf '%h\n' | head -1)" >> "$GITHUB_ENV"
           echo "CMAKE=$(command -v cmake)" >> "$GITHUB_ENV"
 
-      - name: Setup ONNX Runtime for Intel macOS
-        if: contains(matrix.args, 'x86_64-apple-darwin')
+      - name: Setup ONNX Runtime (macOS)
+        if: matrix.platform == 'macos-latest'
         run: |
           ORT_VERSION="1.23.2"
-          ORT_ARCHIVE="onnxruntime-osx-x86_64-${ORT_VERSION}.tgz"
+          if [[ "${{ matrix.args }}" == *"x86_64"* ]]; then
+            ORT_ARCH="x86_64"
+          else
+            ORT_ARCH="arm64"
+          fi
+          ORT_ARCHIVE="onnxruntime-osx-${ORT_ARCH}-${ORT_VERSION}.tgz"
           ORT_ROOT="${RUNNER_TEMP}/onnxruntime"
           curl -L "https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/${ORT_ARCHIVE}" -o "${RUNNER_TEMP}/${ORT_ARCHIVE}"
           mkdir -p "${ORT_ROOT}"
           tar -xzf "${RUNNER_TEMP}/${ORT_ARCHIVE}" -C "${ORT_ROOT}"
-          ORT_DIR="${ORT_ROOT}/onnxruntime-osx-x86_64-${ORT_VERSION}"
+          ORT_DIR="${ORT_ROOT}/onnxruntime-osx-${ORT_ARCH}-${ORT_VERSION}"
           echo "ORT_LIB_PATH=${ORT_DIR}/lib" >> "$GITHUB_ENV"
           echo "ORT_LIB_LOCATION=${ORT_DIR}/lib" >> "$GITHUB_ENV"
           echo "ORT_PREFER_DYNAMIC_LINK=1" >> "$GITHUB_ENV"
           echo "DYLD_LIBRARY_PATH=${ORT_DIR}/lib:${DYLD_LIBRARY_PATH}" >> "$GITHUB_ENV"
+
+          mkdir -p src-tauri/Frameworks
+          cp -a "${ORT_DIR}/lib/libonnxruntime.${ORT_VERSION}.dylib" src-tauri/Frameworks/
+          ln -sf "libonnxruntime.${ORT_VERSION}.dylib" src-tauri/Frameworks/libonnxruntime.dylib
 
       - name: Install frontend dependencies
         run: pnpm install
